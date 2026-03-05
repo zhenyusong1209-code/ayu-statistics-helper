@@ -62,6 +62,20 @@ export function isNumberMatched(num: number, conditions: FilterConditions): bool
 
 // 根据筛选条件获取符合条件的号码
 export function filterNumbers(conditions: FilterConditions): number[] {
+  const { zodiacs, colors, elements, sizes, tails, animalTypes } = conditions
+  
+  // 如果没有任何筛选条件，返回空数组
+  if (
+    zodiacs.length === 0 &&
+    colors.length === 0 &&
+    elements.length === 0 &&
+    sizes.length === 0 &&
+    tails.length === 0 &&
+    animalTypes.length === 0
+  ) {
+    return []
+  }
+  
   const results: number[] = []
   for (let i = 1; i <= 49; i++) {
     if (isNumberMatched(i, conditions)) {
