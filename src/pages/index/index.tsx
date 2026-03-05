@@ -1177,7 +1177,6 @@ const IndexPage = () => {
               <View className="grid grid-cols-12 gap-1.5">
                 {ZODIAC_LIST.map(zodiac => {
                   const isSelected = isZodiacSelected(zodiac)
-                  const isVisible = isZodiacVisible(zodiac)
                   const visibleNums = getVisibleNumbersByZodiac(zodiac)
                   return (
                     <View key={zodiac} className="flex flex-col items-center">
@@ -1206,10 +1205,6 @@ const IndexPage = () => {
                           )
                         })}
                       </View>
-                      {/* 提示图标 */}
-                      {isSelected && isVisible && (
-                        <Text className="text-xs text-blue-500 mt-0.5">●</Text>
-                      )}
                     </View>
                   )
                 })}
