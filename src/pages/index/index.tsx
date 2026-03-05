@@ -20,6 +20,7 @@ const IndexPage = () => {
   // 选号功能相关状态
   const [selectInputText, setSelectInputText] = useState('')
   const [selectNumbers, setSelectNumbers] = useState<number[]>([])
+  const [visibleZodiacs, setVisibleZodiacs] = useState<Set<string>>(new Set()) // 控制哪些生肖的号码可见
   
   // 复式相关状态
   const [complexInputText, setComplexInputText] = useState('')
@@ -102,12 +103,23 @@ const IndexPage = () => {
     // 去重
     const uniqueNumbers = Array.from(new Set(parsedNumbers))
     setSelectNumbers(uniqueNumbers)
+    
+    // 更新可见生肖：所有被选中的生肖默认显示
+    const zodiacsWithNumbers = new Set<string>()
+    uniqueNumbers.forEach(num => {
+      const zodiac = Object.entries(ZODIAC_TO_NUMBERS).find(([_, nums]) => nums.includes(num))?.[0]
+      if (zodiac) {
+        zodiacsWithNumbers.add(zodiac)
+      }
+    })
+    setVisibleZodiacs(zodiacsWithNumbers)
   }
 
   // 清空选号输入
   const clearSelectInput = () => {
     setSelectInputText('')
     setSelectNumbers([])
+    setVisibleZodiacs(new Set())
   }
 
   // 检查生肖是否被选中（是否有该生肖的号码）
@@ -116,10 +128,55 @@ const IndexPage = () => {
     return zodiacNumbers.some(num => selectNumbers.includes(num))
   }
 
-  // 获取生肖下被选中的号码
-  const getSelectedNumbersByZodiac = (zodiac: string): number[] => {
+  // 切换生肖号码的显示状态
+  const toggleZodiacVisibility = (zodiac: string) => {
+    setVisibleZodiacs(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(zodiac)) {
+        newSet.delete(zodiac)
+      } else {
+        newSet.add(zodiac)
+      }
+      return newSet
+    })
+  }
+
+  // 检查生肖号码是否可见
+  const isZodiacVisible = (zodiac: string): boolean => {
+    return visibleZodiacs.has(zodiac)
+  }
+
+  // 获取生肖下被选中的号码（根据可见性过滤）
+  const getVisibleNumbersByZodiac = (zodiac: string): number[] => {
+    if (!isZodiacVisible(zodiac) || !isZodiacSelected(zodiac)) {
+      return []
+    }
     const zodiacNumbers = ZODIAC_TO_NUMBERS[zodiac] || []
     return zodiacNumbers.filter(num => selectNumbers.includes(num))
+  }
+
+  // 复制选号结果
+  const copySelectResults = () => {
+    const resultText = selectNumbers
+      .sort((a, b) => a - b)
+      .map(num => num < 10 ? `0${num}` : `${num}`)
+      .join(' ')
+    
+    Taro.setClipboardData({
+      data: resultText,
+      success: () => {
+        Taro.showToast({
+          title: '复制成功',
+          icon: 'success'
+        })
+      },
+      fail: () => {
+        Taro.showToast({
+          title: '复制失败',
+          icon: 'error'
+        })
+      }
+    })
   }
 
   // 处理复式输入
@@ -1066,36 +1123,52 @@ const IndexPage = () => {
             <View className="bg-white rounded-xl p-4 shadow-sm">
               <View className="flex flex-row justify-between items-center mb-4">
                 <Text className="block text-lg font-semibold text-gray-800">输出结果</Text>
-                {selectNumbers.length > 0 && (
-                  <View
-                    className="bg-red-100 text-red-600 rounded-lg px-3 py-1.5"
-                    onClick={clearSelectInput}
-                  >
-                    <Text className="text-sm font-medium">清空</Text>
-                  </View>
-                )}
+                <View className="flex flex-row items-center gap-2">
+                  {selectNumbers.length > 0 && (
+                    <>
+                      <View
+                        className="bg-blue-100 text-blue-600 rounded-lg px-3 py-1.5"
+                        onClick={copySelectResults}
+                      >
+                        <Text className="text-sm font-medium">复制</Text>
+                      </View>
+                      <View
+                        className="bg-red-100 text-red-600 rounded-lg px-3 py-1.5"
+                        onClick={clearSelectInput}
+                      >
+                        <Text className="text-sm font-medium">清空</Text>
+                      </View>
+                    </>
+                  )}
+                </View>
               </View>
 
               {/* 生肖展示 - 一行展示完 */}
               <View className="grid grid-cols-12 gap-1.5">
                 {ZODIAC_LIST.map(zodiac => {
                   const isSelected = isZodiacSelected(zodiac)
-                  const selectedNums = getSelectedNumbersByZodiac(zodiac)
+                  const isVisible = isZodiacVisible(zodiac)
+                  const visibleNums = getVisibleNumbersByZodiac(zodiac)
                   return (
                     <View key={zodiac} className="flex flex-col items-center">
-                      {/* 生肖名称 */}
+                      {/* 生肖名称 - 可点击 */}
                       <View 
                         className={`w-8 h-8 rounded-lg flex items-center justify-center mb-1.5 ${
                           isSelected ? 'bg-black' : 'bg-gray-300'
-                        }`}
+                        } ${isSelected ? 'cursor-pointer' : ''}`}
+                        onClick={() => {
+                          if (isSelected) {
+                            toggleZodiacVisibility(zodiac)
+                          }
+                        }}
                       >
                         <Text className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-gray-500'}`}>
                           {zodiac}
                         </Text>
                       </View>
-                      {/* 号码球 */}
+                      {/* 号码球 - 只显示可见的 */}
                       <View className="flex flex-wrap gap-0.5 justify-center">
-                        {selectedNums.map(num => {
+                        {visibleNums.map(num => {
                           const attrs = getNumberAttributes(num)
                           return (
                             <View 
@@ -1107,10 +1180,20 @@ const IndexPage = () => {
                           )
                         })}
                       </View>
+                      {/* 提示图标 */}
+                      {isSelected && isVisible && (
+                        <Text className="text-xs text-blue-500 mt-0.5">●</Text>
+                      )}
                     </View>
                   )
                 })}
               </View>
+              {/* 提示文字 */}
+              {selectNumbers.length > 0 && (
+                <Text className="text-xs text-gray-400 mt-3 text-center">
+                  点击黑色生肖显示/隐藏号码
+                </Text>
+              )}
             </View>
 
             {/* 输入板块 */}
