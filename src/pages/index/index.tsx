@@ -1062,6 +1062,57 @@ const IndexPage = () => {
         {/* 选号区 */}
         {activeTab === 'select' && (
           <View className="space-y-4">
+            {/* 输出结果板块 */}
+            <View className="bg-white rounded-xl p-4 shadow-sm">
+              <View className="flex flex-row justify-between items-center mb-4">
+                <Text className="block text-lg font-semibold text-gray-800">输出结果</Text>
+                {selectNumbers.length > 0 && (
+                  <View
+                    className="bg-red-100 text-red-600 rounded-lg px-3 py-1.5"
+                    onClick={clearSelectInput}
+                  >
+                    <Text className="text-sm font-medium">清空</Text>
+                  </View>
+                )}
+              </View>
+
+              {/* 生肖展示 - 一行展示完 */}
+              <View className="grid grid-cols-12 gap-2">
+                {ZODIAC_LIST.map(zodiac => {
+                  const isSelected = isZodiacSelected(zodiac)
+                  const selectedNums = getSelectedNumbersByZodiac(zodiac)
+                  return (
+                    <View key={zodiac} className="flex flex-col items-center">
+                      {/* 生肖名称 */}
+                      <View 
+                        className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 ${
+                          isSelected ? 'bg-black' : 'bg-gray-300'
+                        }`}
+                      >
+                        <Text className={`text-base font-bold ${isSelected ? 'text-white' : 'text-gray-500'}`}>
+                          {zodiac}
+                        </Text>
+                      </View>
+                      {/* 号码球 */}
+                      <View className="flex flex-wrap gap-1 justify-center">
+                        {selectedNums.map(num => {
+                          const attrs = getNumberAttributes(num)
+                          return (
+                            <View 
+                              key={num} 
+                              className={`w-5 h-5 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}
+                            >
+                              <Text className="text-xs font-bold">{attrs.formatted}</Text>
+                            </View>
+                          )
+                        })}
+                      </View>
+                    </View>
+                  )
+                })}
+              </View>
+            </View>
+
             {/* 输入板块 */}
             <View className="bg-white rounded-xl p-4 shadow-sm">
               <Text className="block text-lg font-semibold mb-3 text-gray-800">输入</Text>
@@ -1077,96 +1128,6 @@ const IndexPage = () => {
               <Text className="text-sm text-gray-500">
                 已识别 {selectNumbers.length} 个号码
               </Text>
-            </View>
-
-            {/* 输出结果板块 */}
-            <View className="bg-white rounded-xl p-4 shadow-sm">
-              <View className="flex flex-row justify-between items-center mb-4">
-                <Text className="block text-lg font-semibold text-gray-800">输出结果</Text>
-                {selectNumbers.length > 0 && (
-                  <View
-                    className="bg-red-100 text-red-600 rounded-lg px-3 py-1.5"
-                    onClick={clearSelectInput}
-                  >
-                    <Text className="text-sm font-medium">清空</Text>
-                  </View>
-                )}
-              </View>
-
-              {/* 生肖展示 - 分两行 */}
-              <View className="space-y-3">
-                {/* 第一行：鼠-蛇 */}
-                <View className="grid grid-cols-6 gap-2">
-                  {ZODIAC_LIST.slice(0, 6).map(zodiac => {
-                    const isSelected = isZodiacSelected(zodiac)
-                    const selectedNums = getSelectedNumbersByZodiac(zodiac)
-                    return (
-                      <View key={zodiac} className="flex flex-col items-center">
-                        {/* 生肖名称 */}
-                        <View 
-                          className={`w-12 h-12 rounded-lg flex items-center justify-center mb-2 ${
-                            isSelected ? 'bg-black' : 'bg-gray-300'
-                          }`}
-                        >
-                          <Text className={`text-xl font-bold ${isSelected ? 'text-white' : 'text-gray-500'}`}>
-                            {zodiac}
-                          </Text>
-                        </View>
-                        {/* 号码球 */}
-                        <View className="flex flex-wrap gap-1 justify-center">
-                          {selectedNums.map(num => {
-                            const attrs = getNumberAttributes(num)
-                            return (
-                              <View 
-                                key={num} 
-                                className={`w-6 h-6 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}
-                              >
-                                <Text className="text-xs font-bold">{attrs.formatted}</Text>
-                              </View>
-                            )
-                          })}
-                        </View>
-                      </View>
-                    )
-                  })}
-                </View>
-
-                {/* 第二行：马-猪 */}
-                <View className="grid grid-cols-6 gap-2">
-                  {ZODIAC_LIST.slice(6, 12).map(zodiac => {
-                    const isSelected = isZodiacSelected(zodiac)
-                    const selectedNums = getSelectedNumbersByZodiac(zodiac)
-                    return (
-                      <View key={zodiac} className="flex flex-col items-center">
-                        {/* 生肖名称 */}
-                        <View 
-                          className={`w-12 h-12 rounded-lg flex items-center justify-center mb-2 ${
-                            isSelected ? 'bg-black' : 'bg-gray-300'
-                          }`}
-                        >
-                          <Text className={`text-xl font-bold ${isSelected ? 'text-white' : 'text-gray-500'}`}>
-                            {zodiac}
-                          </Text>
-                        </View>
-                        {/* 号码球 */}
-                        <View className="flex flex-wrap gap-1 justify-center">
-                          {selectedNums.map(num => {
-                            const attrs = getNumberAttributes(num)
-                            return (
-                              <View 
-                                key={num} 
-                                className={`w-6 h-6 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}
-                              >
-                                <Text className="text-xs font-bold">{attrs.formatted}</Text>
-                              </View>
-                            )
-                          })}
-                        </View>
-                      </View>
-                    )
-                  })}
-                </View>
-              </View>
             </View>
           </View>
         )}
