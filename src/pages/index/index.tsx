@@ -611,13 +611,13 @@ const IndexPage = () => {
                   {/* 0次 */}
                   {groupedNumbers[0] && groupedNumbers[0].length > 0 && (
                     <View className="flex flex-row items-start">
-                      <Text className="text-sm font-medium text-gray-700 w-12">0次：</Text>
+                      <Text selectable className="text-sm font-medium text-gray-700 w-12">0次：</Text>
                       <View className="flex-1 flex flex-wrap gap-1.5">
                         {groupedNumbers[0].sort((a, b) => a - b).map(num => {
                           const attrs = getNumberAttributes(num)
                           return (
                             <View key={num} className={`w-8 h-8 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}>
-                              <Text className="text-xs font-bold">{attrs.formatted}</Text>
+                              <Text selectable className="text-xs font-bold">{attrs.formatted}</Text>
                             </View>
                           )
                         })}
@@ -632,13 +632,13 @@ const IndexPage = () => {
                     .sort((a, b) => a - b)
                     .map(count => (
                       <View key={count} className="flex flex-row items-start">
-                        <Text className="text-sm font-medium text-gray-700 w-12">{count}次：</Text>
+                        <Text selectable className="text-sm font-medium text-gray-700 w-12">{count}次：</Text>
                         <View className="flex-1 flex flex-wrap gap-1.5">
                           {groupedNumbers[count].sort((a, b) => a - b).map(num => {
                             const attrs = getNumberAttributes(num)
                             return (
                               <View key={num} className={`w-8 h-8 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}>
-                                <Text className="text-xs font-bold">{attrs.formatted}</Text>
+                                <Text selectable className="text-xs font-bold">{attrs.formatted}</Text>
                               </View>
                             )
                           })}
@@ -667,10 +667,10 @@ const IndexPage = () => {
                   {/* 0次 */}
                   {groupedZodiacs[0] && groupedZodiacs[0].length > 0 && (
                     <View className="flex flex-row items-start">
-                      <Text className="text-sm font-medium text-gray-700 w-12">0次：</Text>
+                      <Text selectable className="text-sm font-medium text-gray-700 w-12">0次：</Text>
                       <View className="flex-1 flex flex-wrap gap-2">
                         {groupedZodiacs[0].sort().map(zodiac => (
-                          <Text key={zodiac} className="text-base font-medium text-gray-700">
+                          <Text selectable key={zodiac} className="text-base font-medium text-gray-700">
                             {zodiac}
                           </Text>
                         ))}
@@ -685,10 +685,10 @@ const IndexPage = () => {
                     .sort((a, b) => a - b)
                     .map(count => (
                       <View key={count} className="flex flex-row items-start">
-                        <Text className="text-sm font-medium text-gray-700 w-12">{count}次：</Text>
+                        <Text selectable className="text-sm font-medium text-gray-700 w-12">{count}次：</Text>
                         <View className="flex-1 flex flex-wrap gap-2">
                           {groupedZodiacs[count].sort().map(zodiac => (
-                            <Text key={zodiac} className="text-base font-medium text-gray-700">
+                            <Text selectable key={zodiac} className="text-base font-medium text-gray-700">
                               {zodiac}
                             </Text>
                           ))}
