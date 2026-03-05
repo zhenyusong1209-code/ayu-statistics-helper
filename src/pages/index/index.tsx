@@ -118,8 +118,20 @@ const IndexPage = () => {
     setComplexNumbers(uniqueNumbers)
     setComplexZodiacs(uniqueZodiacs)
     
-    // 判断模式：如果有生肖输入，且数量大于等于数字输入数量，则使用生肖模式
-    const zodiacMode = parsedZodiacs.length >= 2 && parsedZodiacs.length >= parsedNumbers.length
+    // 改进模式判断逻辑：
+    // 1. 统计输入中包含的纯数字（非生肖转换）数量
+    const rawNumbers = value.split(/[\s,\s,，。、]+/)
+      .map(t => parseInt(t.trim(), 10))
+      .filter(n => !Number.isNaN(n) && n >= 1 && n <= 49)
+    
+    // 2. 判断模式：
+    //    - 如果有纯数字输入 >= 2，优先使用数字模式
+    //    - 否则，如果有生肖输入 >= 2，使用生肖模式
+    const hasRawNumbers = rawNumbers.length >= 2
+    const hasZodiacs = uniqueZodiacs.length >= 2
+    
+    // 优先使用数字模式（用户明确输入了数字）
+    const zodiacMode = !hasRawNumbers && hasZodiacs
     setIsZodiacMode(zodiacMode)
     
     // 重置复式类型和结果
