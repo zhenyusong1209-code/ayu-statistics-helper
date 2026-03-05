@@ -50,8 +50,8 @@ export const BIG_NUMBERS = Array.from({ length: 25 }, (_, i) => i + 25) // 25-49
 
 // 家禽（牛羊猪鸡马狗）
 export const DOMESTIC_NUMBERS = [1, 6, 8, 9, 10, 12, 13, 18, 20, 21, 22, 24, 25, 30, 32, 33, 34, 36, 37, 42, 44, 45, 46, 48, 49]
-// 野兽（龙虎兔猴蛇）
-export const WILD_NUMBERS = [2, 3, 4, 5, 11, 14, 15, 16, 17, 23, 26, 27, 28, 29, 35, 38, 39, 40, 41, 47]
+// 野兽（龙虎猴鼠兔蛇）
+export const WILD_NUMBERS = [2, 3, 4, 5, 7, 11, 14, 15, 16, 17, 19, 23, 26, 27, 28, 29, 31, 35, 38, 39, 40, 41, 43, 47]
 
 // 获取号码的波色
 export function getNumberColor(num: number): string {
