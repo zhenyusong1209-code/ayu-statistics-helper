@@ -1,7 +1,7 @@
 import { View, Text, Input, ScrollView } from '@tarojs/components'
 import { useState } from 'react'
 import Taro from '@tarojs/taro'
-import { parseNumbers, countNumbers, getNumberAttributes, getColorClassName } from '@/utils/numberParser'
+import { parseNumbers, countNumbers, getNumberAttributes, getColorClassName, parseZodiacs, countZodiacs } from '@/utils/numberParser'
 import { filterNumbers, toggleArrayItem } from '@/utils/numberFilter'
 import type { FilterConditions } from '@/utils/numberFilter'
 import './index.css'
@@ -12,6 +12,7 @@ const IndexPage = () => {
   const [activeTab, setActiveTab] = useState<TabType>('statistics')
   const [inputText, setInputText] = useState('')
   const [numbers, setNumbers] = useState<number[]>([])
+  const [zodiacs, setZodiacs] = useState<string[]>([])
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([])
   
   // 挑码筛选条件
@@ -28,12 +29,18 @@ const IndexPage = () => {
   const handleInputChange = (e: any) => {
     const value = e.detail.value
     setInputText(value)
+    
+    // 同时解析数字和生肖
     const parsedNumbers = parseNumbers(value)
+    const parsedZodiacs = parseZodiacs(value)
+    
     setNumbers(parsedNumbers)
+    setZodiacs(parsedZodiacs)
   }
 
   // 统计数据
   const statistics = countNumbers(numbers)
+  const zodiacStatistics = countZodiacs(zodiacs)
 
   // 按出现次数分组号码
   const groupNumbersByCount = () => {
@@ -51,7 +58,23 @@ const IndexPage = () => {
     return groups
   }
 
+  // 按出现次数分组生肖
+  const groupZodiacsByCount = () => {
+    const groups: Record<number, string[]> = {}
+    
+    // 初始化所有生肖
+    Object.entries(zodiacStatistics).forEach(([zodiac, count]) => {
+      if (!groups[count]) {
+        groups[count] = []
+      }
+      groups[count].push(zodiac)
+    })
+    
+    return groups
+  }
+
   const groupedNumbers = groupNumbersByCount()
+  const groupedZodiacs = groupZodiacsByCount()
 
   // 切换号码选中状态
   const toggleNumber = (num: number) => {
@@ -193,21 +216,21 @@ const IndexPage = () => {
           <View className="space-y-4">
             {/* 输入区 */}
             <View className="bg-white rounded-xl p-4 shadow-sm">
-              <Text className="block text-lg font-semibold mb-2 text-gray-800">数字输入</Text>
+              <Text className="block text-lg font-semibold mb-2 text-gray-800">输入</Text>
               <View className="bg-gray-50 rounded-xl px-4 py-3 mb-3">
                 <Input
                   className="w-full bg-transparent text-base"
-                  placeholder="请输入数字或生肖（1-49），用空格或符号隔开"
+                  placeholder="请输入数字或生肖（生肖可连续输入）"
                   placeholderClass="text-gray-400"
                   value={inputText}
                   onInput={handleInputChange}
                 />
               </View>
-              <Text className="text-sm text-gray-500">已识别 {numbers.length} 个有效数字</Text>
+              <Text className="text-sm text-gray-500">已识别 {numbers.length} 个数字，{zodiacs.length} 个生肖</Text>
             </View>
 
-            {/* 统计结果区 */}
-            {numbers.length > 0 && (
+            {/* 统计结果区 - 数字统计 */}
+            {numbers.length > 0 && zodiacs.length === 0 && (
               <View className="bg-white rounded-xl p-4 shadow-sm">
                 <Text className="block text-lg font-semibold mb-4 text-gray-800">统计结果</Text>
                 
@@ -247,6 +270,48 @@ const IndexPage = () => {
                               </View>
                             )
                           })}
+                        </View>
+                      </View>
+                    ))}
+                </View>
+              </View>
+            )}
+
+            {/* 统计结果区 - 生肖统计 */}
+            {zodiacs.length > 0 && (
+              <View className="bg-white rounded-xl p-4 shadow-sm">
+                <Text className="block text-lg font-semibold mb-4 text-gray-800">统计结果</Text>
+                
+                {/* 按出现次数分组展示生肖 */}
+                <View className="space-y-3">
+                  {/* 0次 */}
+                  {groupedZodiacs[0] && groupedZodiacs[0].length > 0 && (
+                    <View className="flex flex-row items-start">
+                      <Text className="text-sm font-medium text-gray-700 w-12">0次：</Text>
+                      <View className="flex-1 flex flex-wrap gap-2">
+                        {groupedZodiacs[0].sort().map(zodiac => (
+                          <Text key={zodiac} className="text-base font-medium text-gray-700">
+                            {zodiac}
+                          </Text>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+                  
+                  {/* 其他次数 */}
+                  {Object.keys(groupedZodiacs)
+                    .map(Number)
+                    .filter(count => count > 0)
+                    .sort((a, b) => a - b)
+                    .map(count => (
+                      <View key={count} className="flex flex-row items-start">
+                        <Text className="text-sm font-medium text-gray-700 w-12">{count}次：</Text>
+                        <View className="flex-1 flex flex-wrap gap-2">
+                          {groupedZodiacs[count].sort().map(zodiac => (
+                            <Text key={zodiac} className="text-base font-medium text-gray-700">
+                              {zodiac}
+                            </Text>
+                          ))}
                         </View>
                       </View>
                     ))}

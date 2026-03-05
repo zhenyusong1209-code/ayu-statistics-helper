@@ -7,6 +7,9 @@ import {
   getNumberAnimalType
 } from './numberAttributes'
 
+// 十二生肖列表
+const ZODIACS = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪']
+
 // 十二生肖到数字的映射（每个生肖对应哪些数字）
 export const ZODIAC_TO_NUMBERS: Record<string, number[]> = {
   '鼠': [1, 13, 25, 37, 49],
@@ -22,6 +25,14 @@ export const ZODIAC_TO_NUMBERS: Record<string, number[]> = {
   '狗': [11, 23, 35, 47],
   '猪': [12, 24, 36, 48]
 }
+
+// 数字到生肖的映射
+export const NUMBER_TO_ZODIAC: Record<number, string> = {}
+Object.entries(ZODIAC_TO_NUMBERS).forEach(([zodiac, nums]) => {
+  nums.forEach(num => {
+    NUMBER_TO_ZODIAC[num] = zodiac
+  })
+})
 
 // 解析输入字符串，提取所有数字和十二生肖对应的数字
 export function parseNumbers(input: string): number[] {
@@ -72,6 +83,39 @@ export function countNumbers(numbers: number[]): Record<number, number> {
   // 统计出现的数字
   numbers.forEach(num => {
     counts[num] = (counts[num] || 0) + 1
+  })
+  
+  return counts
+}
+
+// 从连续字符串中提取生肖（支持无分隔符连续输入）
+export function parseZodiacs(input: string): string[] {
+  if (!input.trim()) return []
+  
+  const zodiacs: string[] = []
+  const chars = input.split('')
+  
+  chars.forEach(char => {
+    if (ZODIACS.includes(char)) {
+      zodiacs.push(char)
+    }
+  })
+  
+  return zodiacs
+}
+
+// 统计生肖出现次数
+export function countZodiacs(zodiacs: string[]): Record<string, number> {
+  const counts: Record<string, number> = {}
+  
+  // 初始化所有生肖计数为 0
+  ZODIACS.forEach(zodiac => {
+    counts[zodiac] = 0
+  })
+  
+  // 统计出现的生肖
+  zodiacs.forEach(zodiac => {
+    counts[zodiac] = (counts[zodiac] || 0) + 1
   })
   
   return counts
