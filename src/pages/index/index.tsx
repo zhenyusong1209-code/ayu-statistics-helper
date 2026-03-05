@@ -34,7 +34,23 @@ const IndexPage = () => {
 
   // 统计数据
   const statistics = countNumbers(numbers)
-
+  
+  // 按出现次数分组号码
+  const numbersByCount: Record<number, number[]> = {}
+  for (let i = 1; i <= 49; i++) {
+    const count = statistics[i]
+    if (!numbersByCount[count]) {
+      numbersByCount[count] = []
+    }
+    numbersByCount[count].push(i)
+  }
+  
+  // 获取所有出现过的次数（不包括0），并排序
+  const counts = Object.keys(numbersByCount)
+    .map(Number)
+    .filter(count => count > 0)
+    .sort((a, b) => a - b)
+  
   // 切换号码选中状态
   const toggleNumber = (num: number) => {
     setSelectedNumbers(prev => {
@@ -192,21 +208,40 @@ const IndexPage = () => {
             <View className="bg-white rounded-xl p-4 shadow-sm">
               <Text className="block text-lg font-semibold mb-4 text-gray-800">统计结果</Text>
               
-              {/* 统计表格 */}
               <View className="space-y-3">
-                {Array.from({ length: 5 }, (_, i) => i * 10).map(start => (
-                  <View key={start} className="flex flex-row items-center">
-                    {/* 号码行 */}
-                    <View className="flex flex-row justify-between flex-1">
-                      {Array.from({ length: 10 }, (_, j) => start + j + 1).slice(0, 9).map(num => {
-                        const count = statistics[num]
+                {/* 0次的号码 */}
+                {numbersByCount[0] && numbersByCount[0].length > 0 && (
+                  <View className="bg-gray-50 rounded-lg p-3">
+                    <Text className="block text-sm font-medium text-gray-700 mb-2">0次：</Text>
+                    <View className="flex flex-wrap gap-2">
+                      {numbersByCount[0].map(num => {
                         const attrs = getNumberAttributes(num)
                         return (
-                          <View key={num} className="flex flex-col items-center flex-1">
-                            <Text className="text-sm font-medium text-gray-700 mb-1">{attrs.formatted}</Text>
-                            <View className="w-6 h-6 rounded-full flex items-center justify-center bg-blue-100">
-                              <Text className="text-xs font-bold text-blue-600">{count > 0 ? count : '-'}</Text>
-                            </View>
+                          <View
+                            key={num}
+                            className="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200"
+                          >
+                            <Text className="text-xs font-medium text-gray-600">{attrs.formatted}</Text>
+                          </View>
+                        )
+                      })}
+                    </View>
+                  </View>
+                )}
+                
+                {/* 其他次数的号码 */}
+                {counts.map(count => (
+                  <View key={count} className="bg-blue-50 rounded-lg p-3">
+                    <Text className="block text-sm font-medium text-gray-700 mb-2">{count}次：</Text>
+                    <View className="flex flex-wrap gap-2">
+                      {numbersByCount[count].map(num => {
+                        const attrs = getNumberAttributes(num)
+                        return (
+                          <View
+                            key={num}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}
+                          >
+                            <Text className="text-xs font-medium">{attrs.formatted}</Text>
                           </View>
                         )
                       })}
