@@ -684,11 +684,11 @@ const IndexPage = () => {
                     </View>
                   </View>
                 </View>
-                <View className="space-y-2">
+                <View className="grid grid-cols-2 gap-3">
                   {complexResults.map((combination, index) => (
-                    <View key={index} className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0">
-                      <Text className="text-sm text-gray-600 w-12">第{index + 1}组：</Text>
-                      <View className="flex-1 flex flex-wrap gap-1.5 justify-end">
+                    <View key={index} className="bg-gray-50 rounded-lg p-3">
+                      <Text className="text-xs text-gray-500 mb-2 block">第{index + 1}组</Text>
+                      <View className="flex flex-wrap gap-1.5">
                         {isZodiacMode ? (
                           // 生肖模式显示
                           (combination as string[]).map(zodiac => (
