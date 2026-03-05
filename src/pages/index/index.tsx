@@ -104,6 +104,49 @@ const IndexPage = () => {
     })
   }
 
+  // 复制统计结果
+  const copyStatistics = (type: 'number' | 'zodiac') => {
+    let text = ''
+    
+    if (type === 'number') {
+      // 数字统计复制
+      Object.keys(groupedNumbers)
+        .map(Number)
+        .filter(count => groupedNumbers[count]?.length > 0)
+        .sort((a, b) => a - b)
+        .forEach(count => {
+          const nums = groupedNumbers[count].sort((a, b) => a - b)
+          text += `${count}次：${nums.map(n => n < 10 ? `0${n}` : n).join(' ')}\n`
+        })
+    } else {
+      // 生肖统计复制
+      Object.keys(groupedZodiacs)
+        .map(Number)
+        .filter(count => groupedZodiacs[count]?.length > 0)
+        .sort((a, b) => a - b)
+        .forEach(count => {
+          const zodiacList = groupedZodiacs[count].sort()
+          text += `${count}次：${zodiacList.join(' ')}\n`
+        })
+    }
+    
+    Taro.setClipboardData({
+      data: text.trim(),
+      success: () => {
+        Taro.showToast({
+          title: '复制成功',
+          icon: 'success'
+        })
+      },
+      fail: () => {
+        Taro.showToast({
+          title: '复制失败',
+          icon: 'error'
+        })
+      }
+    })
+  }
+
   // 根据筛选条件获取结果
   const filteredNumbers = filterNumbers(filterConditions)
 
@@ -232,7 +275,15 @@ const IndexPage = () => {
             {/* 统计结果区 - 数字统计 */}
             {numbers.length > 0 && zodiacs.length === 0 && (
               <View className="bg-white rounded-xl p-4 shadow-sm">
-                <Text className="block text-lg font-semibold mb-4 text-gray-800">统计结果</Text>
+                <View className="flex flex-row justify-between items-center mb-4">
+                  <Text className="block text-lg font-semibold text-gray-800">统计结果</Text>
+                  <View
+                    className="bg-blue-100 text-blue-600 rounded-lg px-3 py-1.5"
+                    onClick={() => copyStatistics('number')}
+                  >
+                    <Text className="text-sm font-medium">复制</Text>
+                  </View>
+                </View>
                 
                 {/* 按出现次数分组展示 */}
                 <View className="space-y-3">
@@ -280,7 +331,15 @@ const IndexPage = () => {
             {/* 统计结果区 - 生肖统计 */}
             {zodiacs.length > 0 && (
               <View className="bg-white rounded-xl p-4 shadow-sm">
-                <Text className="block text-lg font-semibold mb-4 text-gray-800">统计结果</Text>
+                <View className="flex flex-row justify-between items-center mb-4">
+                  <Text className="block text-lg font-semibold text-gray-800">统计结果</Text>
+                  <View
+                    className="bg-blue-100 text-blue-600 rounded-lg px-3 py-1.5"
+                    onClick={() => copyStatistics('zodiac')}
+                  >
+                    <Text className="text-sm font-medium">复制</Text>
+                  </View>
+                </View>
                 
                 {/* 按出现次数分组展示生肖 */}
                 <View className="space-y-3">
