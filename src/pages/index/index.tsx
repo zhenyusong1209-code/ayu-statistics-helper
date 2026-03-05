@@ -6,8 +6,8 @@ import { filterNumbers, toggleArrayItem } from '@/utils/numberFilter'
 import type { FilterConditions } from '@/utils/numberFilter'
 import './index.css'
 
-// 十二生肖列表
-const ZODIAC_LIST = ['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪']
+// 十二生肖列表（选号模块自定义排序）
+const ZODIAC_LIST = ['马', '蛇', '龙', '兔', '虎', '牛', '鼠', '猪', '狗', '鸡', '猴', '羊']
 
 type TabType = 'statistics' | 'complex' | 'pick' | 'select' | 'about'
 
