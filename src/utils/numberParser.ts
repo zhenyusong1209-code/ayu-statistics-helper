@@ -7,17 +7,50 @@ import {
   getNumberAnimalType
 } from './numberAttributes'
 
-// 解析输入字符串，提取所有数字
+// 十二生肖到数字的映射（每个生肖对应哪些数字）
+export const ZODIAC_TO_NUMBERS: Record<string, number[]> = {
+  '鼠': [1, 13, 25, 37, 49],
+  '牛': [2, 14, 26, 38],
+  '虎': [3, 15, 27, 39],
+  '兔': [4, 16, 28, 40],
+  '龙': [5, 17, 29, 41],
+  '蛇': [6, 18, 30, 42],
+  '马': [7, 19, 31, 43],
+  '羊': [8, 20, 32, 44],
+  '猴': [9, 21, 33, 45],
+  '鸡': [10, 22, 34, 46],
+  '狗': [11, 23, 35, 47],
+  '猪': [12, 24, 36, 48]
+}
+
+// 解析输入字符串，提取所有数字和十二生肖对应的数字
 export function parseNumbers(input: string): number[] {
   if (!input.trim()) return []
   
-  // 支持空格、逗号、句号、点、换行等分隔符
-  const numbers = input
-    .split(/[\s,.\n\r，。、]+/)
-    .map(s => s.trim())
-    .filter(s => s !== '')
-    .map(s => parseInt(s, 10))
-    .filter(n => !Number.isNaN(n) && n >= 1 && n <= 49)
+  const numbers: number[] = []
+  
+  // 按分隔符分割
+  const tokens = input.split(/[\s,.\n\r，。、]+/)
+  
+  tokens.forEach(token => {
+    token = token.trim()
+    if (!token) return
+    
+    // 尝试解析为数字
+    const num = parseInt(token, 10)
+    if (!Number.isNaN(num) && num >= 1 && num <= 49) {
+      numbers.push(num)
+      return
+    }
+    
+    // 尝试解析为生肖
+    if (ZODIAC_TO_NUMBERS[token]) {
+      // 将该生肖对应的所有数字加入
+      numbers.push(...ZODIAC_TO_NUMBERS[token])
+    }
+    
+    // 其他内容自动过滤，不处理
+  })
   
   return numbers
 }
@@ -55,5 +88,19 @@ export function getNumberAttributes(num: number) {
     tail: getNumberTail(num),
     size: getNumberSize(num),
     animalType: getNumberAnimalType(num)
+  }
+}
+
+// 获取波色对应的颜色类名
+export function getColorClassName(color: string): string {
+  switch (color) {
+    case '红':
+      return 'bg-red-500 text-white'
+    case '蓝':
+      return 'bg-blue-500 text-white'
+    case '绿':
+      return 'bg-green-500 text-white'
+    default:
+      return 'bg-gray-200 text-gray-700'
   }
 }
