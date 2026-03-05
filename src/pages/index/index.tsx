@@ -18,8 +18,10 @@ const IndexPage = () => {
   // 复式相关状态
   const [complexInputText, setComplexInputText] = useState('')
   const [complexNumbers, setComplexNumbers] = useState<number[]>([])
+  const [complexZodiacs, setComplexZodiacs] = useState<string[]>([])
   const [complexType, setComplexType] = useState<number | null>(null) // 2, 3, 4, 5
-  const [complexResults, setComplexResults] = useState<number[][]>([])
+  const [complexResults, setComplexResults] = useState<(number[] | string[])[]>([])
+  const [isZodiacMode, setIsZodiacMode] = useState(false) // 是否为生肖模式
   
   // 挑码筛选条件
   const [filterConditions, setFilterConditions] = useState<FilterConditions>({
@@ -105,11 +107,20 @@ const IndexPage = () => {
     const value = e.detail.value
     setComplexInputText(value)
     
-    // 解析数字并去重
+    // 同时解析数字和生肖
     const parsedNumbers = parseNumbers(value)
+    const parsedZodiacs = parseZodiacs(value)
+    
     // 去重
     const uniqueNumbers = Array.from(new Set(parsedNumbers))
+    const uniqueZodiacs = Array.from(new Set(parsedZodiacs))
+    
     setComplexNumbers(uniqueNumbers)
+    setComplexZodiacs(uniqueZodiacs)
+    
+    // 判断模式：如果有生肖输入，且数量大于等于数字输入数量，则使用生肖模式
+    const zodiacMode = parsedZodiacs.length >= 2 && parsedZodiacs.length >= parsedNumbers.length
+    setIsZodiacMode(zodiacMode)
     
     // 重置复式类型和结果
     setComplexType(null)
@@ -120,8 +131,10 @@ const IndexPage = () => {
   const clearComplexInput = () => {
     setComplexInputText('')
     setComplexNumbers([])
+    setComplexZodiacs([])
     setComplexType(null)
     setComplexResults([])
+    setIsZodiacMode(false)
   }
 
   // 计算组合数 C(n,k)
@@ -161,19 +174,60 @@ const IndexPage = () => {
     return result
   }
 
-  // 处理复式类型选择
-  const handleComplexTypeSelect = (k: number) => {
-    if (complexNumbers.length < k) {
-      Taro.showToast({
-        title: `请输入至少${k}个号码`,
-        icon: 'none'
-      })
-      return
+  // 生成所有生肖组合
+  const generateZodiacCombinations = (zodiacList: string[], k: number): string[][] => {
+    if (k > zodiacList.length || k < 0) return []
+    if (k === 0) return [[]]
+    if (k === zodiacList.length) return [zodiacList]
+    
+    const result: string[][] = []
+    
+    const backtrack = (start: number, path: string[]) => {
+      if (path.length === k) {
+        result.push([...path])
+        return
+      }
+      
+      for (let i = start; i < zodiacList.length; i++) {
+        path.push(zodiacList[i])
+        backtrack(i + 1, path)
+        path.pop()
+      }
     }
     
-    setComplexType(k)
-    const combinations = generateCombinations(complexNumbers, k)
-    setComplexResults(combinations)
+    backtrack(0, [])
+    return result
+  }
+
+  // 处理复式类型选择
+  const handleComplexTypeSelect = (k: number) => {
+    if (isZodiacMode) {
+      // 生肖模式
+      if (complexZodiacs.length < k) {
+        Taro.showToast({
+          title: `请输入至少${k}个生肖`,
+          icon: 'none'
+        })
+        return
+      }
+      
+      setComplexType(k)
+      const combinations = generateZodiacCombinations(complexZodiacs, k)
+      setComplexResults(combinations)
+    } else {
+      // 数字模式
+      if (complexNumbers.length < k) {
+        Taro.showToast({
+          title: `请输入至少${k}个号码`,
+          icon: 'none'
+        })
+        return
+      }
+      
+      setComplexType(k)
+      const combinations = generateCombinations(complexNumbers, k)
+      setComplexResults(combinations)
+    }
   }
 
   // 清空筛选条件
@@ -306,6 +360,41 @@ const IndexPage = () => {
       const attrs = getNumberAttributes(n)
       return attrs.formatted
     }).join(',')
+    
+    Taro.setClipboardData({
+      data: resultText,
+      success: () => {
+        Taro.showToast({
+          title: '复制成功',
+          icon: 'success'
+        })
+      },
+      fail: () => {
+        Taro.showToast({
+          title: '复制失败',
+          icon: 'error'
+        })
+      }
+    })
+  }
+
+  // 复制复式结果
+  const copyComplexResults = () => {
+    let resultText = ''
+    
+    if (isZodiacMode) {
+      // 生肖模式：生成"牛羊 牛鸡"这样的格式
+      resultText = complexResults.map((combination) => {
+        const zodiacList = combination as string[]
+        return `复${complexType}结果：${zodiacList.join(' ')}`
+      }).join('\n')
+    } else {
+      // 数字模式：生成"01 02 03"这样的格式
+      resultText = complexResults.map((combination) => {
+        const nums = combination as number[]
+        return nums.map(num => num < 10 ? `0${num}` : `${num}`).join(' ')
+      }).join('\n')
+    }
     
     Taro.setClipboardData({
       data: resultText,
@@ -490,47 +579,61 @@ const IndexPage = () => {
               <View className="bg-gray-50 rounded-xl px-4 py-3 mb-3">
                 <Input
                   className="w-full bg-transparent text-base"
-                  placeholder="请输入2个或更多号码（输入规则同统计模块）"
+                  placeholder="请输入2个或更多号码或生肖（生肖可连续输入，如：牛羊鸡）"
                   placeholderClass="text-gray-400"
                   value={complexInputText}
                   onInput={handleComplexInputChange}
                 />
               </View>
               <Text className="text-sm text-gray-500">
-                已识别 {complexNumbers.length} 个号码
-                {complexNumbers.length >= 2 && '，可以进行复式计算'}
+                已识别 {complexNumbers.length} 个号码，{complexZodiacs.length} 个生肖
+                {(complexNumbers.length >= 2 || complexZodiacs.length >= 2) && '，可以进行复式计算'}
               </Text>
             </View>
 
-            {/* 已选号码显示 */}
-            {complexNumbers.length > 0 && (
+            {/* 已选号码/生肖显示 */}
+            {(complexNumbers.length > 0 || complexZodiacs.length > 0) && (
               <View className="bg-white rounded-xl p-4 shadow-sm">
                 <View className="flex flex-row justify-between items-center mb-3">
-                  <Text className="block text-base font-semibold text-gray-800">已选号码</Text>
-                  <Text className={`text-sm ${complexNumbers.length >= 2 ? 'text-green-600' : 'text-orange-600'}`}>
-                    {complexNumbers.length >= 2 ? '✓ 可以进行复式计算' : `至少还需要 ${2 - complexNumbers.length} 个号码`}
+                  <Text className="block text-base font-semibold text-gray-800">
+                    已选{isZodiacMode ? '生肖' : '号码'}
+                  </Text>
+                  <Text className={`text-sm ${(isZodiacMode ? complexZodiacs.length : complexNumbers.length) >= 2 ? 'text-green-600' : 'text-orange-600'}`}>
+                    {(isZodiacMode ? complexZodiacs.length : complexNumbers.length) >= 2 ? '✓ 可以进行复式计算' : `至少还需要 ${2 - (isZodiacMode ? complexZodiacs.length : complexNumbers.length)} 个${isZodiacMode ? '生肖' : '号码'}`}
                   </Text>
                 </View>
-                <View className="flex flex-wrap gap-2">
-                  {complexNumbers.sort((a, b) => a - b).map(num => {
-                    const attrs = getNumberAttributes(num)
-                    return (
-                      <View key={num} className={`w-8 h-8 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}>
-                        <Text className="text-xs font-bold">{attrs.formatted}</Text>
+                {isZodiacMode ? (
+                  // 生肖模式显示
+                  <View className="flex flex-wrap gap-2">
+                    {complexZodiacs.map(zodiac => (
+                      <View key={zodiac} className="bg-blue-100 text-blue-600 rounded-lg px-3 py-2">
+                        <Text className="text-base font-medium">{zodiac}</Text>
                       </View>
-                    )
-                  })}
-                </View>
+                    ))}
+                  </View>
+                ) : (
+                  // 数字模式显示
+                  <View className="flex flex-wrap gap-2">
+                    {complexNumbers.sort((a, b) => a - b).map(num => {
+                      const attrs = getNumberAttributes(num)
+                      return (
+                        <View key={num} className={`w-8 h-8 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}>
+                          <Text className="text-xs font-bold">{attrs.formatted}</Text>
+                        </View>
+                      )
+                    })}
+                  </View>
+                )}
               </View>
             )}
 
             {/* 复式选项 */}
-            {complexNumbers.length >= 2 && (
+            {(!isZodiacMode && complexNumbers.length >= 2) || (isZodiacMode && complexZodiacs.length >= 2) && (
               <View className="bg-white rounded-xl p-4 shadow-sm">
                 <Text className="block text-base font-semibold mb-3 text-gray-800">复式选项</Text>
                 <View className="flex flex-row gap-2">
-                  {Array.from({ length: Math.min(complexNumbers.length - 1, 4) }, (_, i) => i + 2).map(k => {
-                    const count = calculateCombination(complexNumbers.length, k)
+                  {Array.from({ length: Math.min((isZodiacMode ? complexZodiacs.length : complexNumbers.length) - 1, 4) }, (_, i) => i + 2).map(k => {
+                    const count = calculateCombination(isZodiacMode ? complexZodiacs.length : complexNumbers.length, k)
                     return (
                       <View
                         key={k}
@@ -559,21 +662,39 @@ const IndexPage = () => {
                   <Text className="block text-base font-semibold text-gray-800">
                     复式结果（复{complexType}）
                   </Text>
-                  <Text className="text-sm text-gray-500">共 {complexResults.length} 组</Text>
+                  <View className="flex flex-row items-center gap-2">
+                    <Text className="text-sm text-gray-500">共 {complexResults.length} 组</Text>
+                    <View
+                      className="bg-blue-100 text-blue-600 rounded-lg px-3 py-1.5"
+                      onClick={() => copyComplexResults()}
+                    >
+                      <Text className="text-sm font-medium">复制</Text>
+                    </View>
+                  </View>
                 </View>
                 <View className="space-y-2">
                   {complexResults.map((combination, index) => (
                     <View key={index} className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0">
                       <Text className="text-sm text-gray-600 w-12">第{index + 1}组：</Text>
                       <View className="flex-1 flex flex-wrap gap-1.5 justify-end">
-                        {combination.map(num => {
-                          const attrs = getNumberAttributes(num)
-                          return (
-                            <View key={num} className={`w-7 h-7 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}>
-                              <Text className="text-xs font-bold">{attrs.formatted}</Text>
+                        {isZodiacMode ? (
+                          // 生肖模式显示
+                          (combination as string[]).map(zodiac => (
+                            <View key={zodiac} className="bg-blue-100 text-blue-600 rounded-lg px-2 py-1">
+                              <Text className="text-sm font-medium">{zodiac}</Text>
                             </View>
-                          )
-                        })}
+                          ))
+                        ) : (
+                          // 数字模式显示
+                          (combination as number[]).map(num => {
+                            const attrs = getNumberAttributes(num)
+                            return (
+                              <View key={num} className={`w-7 h-7 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}>
+                                <Text className="text-xs font-bold">{attrs.formatted}</Text>
+                              </View>
+                            )
+                          })
+                        )}
                       </View>
                     </View>
                   ))}
