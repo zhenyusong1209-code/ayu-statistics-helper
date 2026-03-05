@@ -754,169 +754,181 @@ const IndexPage = () => {
               </View>
 
               <View className="space-y-3">
-                {/* 生肖选择 */}
+                {/* 第一行：单双 大小 */}
                 <View>
-                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">生肖（可多选）</Text>
-                  <View className="grid grid-cols-6 gap-1">
-                    {['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'].map(zodiac => (
-                      <View
-                        key={zodiac}
-                        onClick={() => toggleZodiac(zodiac)}
-                        className={`rounded-lg px-2 py-1.5 text-center ${
-                          filterConditions.zodiacs.includes(zodiac)
-                            ? 'bg-blue-600 text-white'
-                            : 'bg-gray-100 text-gray-700'
-                        }`}
-                      >
-                        <Text className="text-xs font-medium">{zodiac}</Text>
-                      </View>
-                    ))}
-                  </View>
-                </View>
-
-                {/* 波色选择 */}
-                <View>
-                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">波色（可多选）</Text>
                   <View className="flex flex-row gap-2">
-                    <View
-                      onClick={() => toggleColor('红')}
-                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
-                        filterConditions.colors.includes('红')
-                          ? 'bg-red-600 text-white'
-                          : 'bg-red-100 text-red-700'
-                      }`}
-                    >
-                      <Text className="text-xs font-medium">红色</Text>
-                    </View>
-                    <View
-                      onClick={() => toggleColor('蓝')}
-                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
-                        filterConditions.colors.includes('蓝')
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-blue-100 text-blue-700'
-                      }`}
-                    >
-                      <Text className="text-xs font-medium">蓝色</Text>
-                    </View>
-                    <View
-                      onClick={() => toggleColor('绿')}
-                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
-                        filterConditions.colors.includes('绿')
-                          ? 'bg-green-600 text-white'
-                          : 'bg-green-100 text-green-700'
-                      }`}
-                    >
-                      <Text className="text-xs font-medium">绿色</Text>
-                    </View>
-                  </View>
-                </View>
-
-                {/* 五行选择 */}
-                <View>
-                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">五行（可多选）</Text>
-                  <View className="grid grid-cols-5 gap-1">
-                    {['金', '木', '水', '火', '土'].map(element => (
-                      <View
-                        key={element}
-                        onClick={() => toggleElement(element)}
-                        className={`rounded-lg px-2 py-1.5 text-center ${
-                          filterConditions.elements.includes(element)
-                            ? 'bg-purple-600 text-white'
-                            : 'bg-purple-100 text-purple-700'
-                        }`}
-                      >
-                        <Text className="text-xs font-medium">{element}</Text>
+                    {/* 单双 */}
+                    <View className="flex-1">
+                      <Text className="block text-xs font-medium mb-2 text-gray-700">单双</Text>
+                      <View className="flex flex-row gap-1">
+                        <View
+                          onClick={() => toggleOddEven('单数')}
+                          className={`flex-1 rounded-lg px-2 py-2 text-center ${
+                            filterConditions.oddEven.includes('单数')
+                              ? 'bg-orange-600 text-white'
+                              : 'bg-orange-50 text-orange-700'
+                          }`}
+                        >
+                          <Text className="text-xs font-medium">单数</Text>
+                        </View>
+                        <View
+                          onClick={() => toggleOddEven('双数')}
+                          className={`flex-1 rounded-lg px-2 py-2 text-center ${
+                            filterConditions.oddEven.includes('双数')
+                              ? 'bg-orange-600 text-white'
+                              : 'bg-orange-50 text-orange-700'
+                          }`}
+                        >
+                          <Text className="text-xs font-medium">双数</Text>
+                        </View>
                       </View>
-                    ))}
-                  </View>
-                </View>
-
-                {/* 大小选择 */}
-                <View>
-                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">大小（可多选）</Text>
-                  <View className="flex flex-row gap-2">
-                    <View
-                      onClick={() => toggleSize('小')}
-                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
-                        filterConditions.sizes.includes('小')
-                          ? 'bg-orange-600 text-white'
-                          : 'bg-orange-100 text-orange-700'
-                      }`}
-                    >
-                      <Text className="text-xs font-medium">小数</Text>
                     </View>
-                    <View
-                      onClick={() => toggleSize('大')}
-                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
-                        filterConditions.sizes.includes('大')
-                          ? 'bg-indigo-600 text-white'
-                          : 'bg-indigo-100 text-indigo-700'
-                      }`}
-                    >
-                      <Text className="text-xs font-medium">大数</Text>
-                    </View>
-                  </View>
-                </View>
-
-                {/* 尾数选择 */}
-                <View>
-                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">尾数（可多选）</Text>
-                  <View className="grid grid-cols-5 gap-1">
-                    {Array.from({ length: 10 }, (_, i) => i).map(tail => (
-                      <View
-                        key={tail}
-                        onClick={() => toggleTail(tail)}
-                        className={`rounded-lg px-2 py-1.5 text-center ${
-                          filterConditions.tails.includes(tail)
-                            ? 'bg-teal-600 text-white'
-                            : 'bg-teal-100 text-teal-700'
-                        }`}
-                      >
-                        <Text className="text-xs font-medium">{tail}尾</Text>
+                    {/* 大小 */}
+                    <View className="flex-1">
+                      <Text className="block text-xs font-medium mb-2 text-gray-700">大小</Text>
+                      <View className="flex flex-row gap-1">
+                        <View
+                          onClick={() => toggleSize('大')}
+                          className={`flex-1 rounded-lg px-2 py-2 text-center ${
+                            filterConditions.sizes.includes('大')
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-indigo-50 text-indigo-700'
+                          }`}
+                        >
+                          <Text className="text-xs font-medium">大数</Text>
+                        </View>
+                        <View
+                          onClick={() => toggleSize('小')}
+                          className={`flex-1 rounded-lg px-2 py-2 text-center ${
+                            filterConditions.sizes.includes('小')
+                              ? 'bg-indigo-600 text-white'
+                              : 'bg-indigo-50 text-indigo-700'
+                          }`}
+                        >
+                          <Text className="text-xs font-medium">小数</Text>
+                        </View>
                       </View>
-                    ))}
+                    </View>
                   </View>
                 </View>
 
-                {/* 家禽野兽选择 */}
+                {/* 第二行：波色 家野 */}
                 <View>
-                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">家禽野兽（可多选）</Text>
                   <View className="flex flex-row gap-2">
-                    <View
-                      onClick={() => toggleAnimalType('家禽')}
-                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
-                        filterConditions.animalTypes.includes('家禽')
-                          ? 'bg-yellow-600 text-white'
-                          : 'bg-yellow-100 text-yellow-700'
-                      }`}
-                    >
-                      <Text className="text-xs font-medium">家禽</Text>
+                    {/* 波色 */}
+                    <View className="flex-1">
+                      <Text className="block text-xs font-medium mb-2 text-gray-700">波色</Text>
+                      <View className="flex flex-row gap-1">
+                        <View
+                          onClick={() => toggleColor('红')}
+                          className={`flex-1 rounded-lg px-2 py-2 text-center ${
+                            filterConditions.colors.includes('红')
+                              ? 'bg-red-600 text-white'
+                              : 'bg-red-50 text-red-700'
+                          }`}
+                        >
+                          <Text className="text-xs font-medium">红</Text>
+                        </View>
+                        <View
+                          onClick={() => toggleColor('蓝')}
+                          className={`flex-1 rounded-lg px-2 py-2 text-center ${
+                            filterConditions.colors.includes('蓝')
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-blue-50 text-blue-700'
+                          }`}
+                        >
+                          <Text className="text-xs font-medium">蓝</Text>
+                        </View>
+                        <View
+                          onClick={() => toggleColor('绿')}
+                          className={`flex-1 rounded-lg px-2 py-2 text-center ${
+                            filterConditions.colors.includes('绿')
+                              ? 'bg-green-600 text-white'
+                              : 'bg-green-50 text-green-700'
+                          }`}
+                        >
+                          <Text className="text-xs font-medium">绿</Text>
+                        </View>
+                      </View>
                     </View>
-                    <View
-                      onClick={() => toggleAnimalType('野兽')}
-                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
-                        filterConditions.animalTypes.includes('野兽')
-                          ? 'bg-pink-600 text-white'
-                          : 'bg-pink-100 text-pink-700'
-                      }`}
-                    >
-                      <Text className="text-xs font-medium">野兽</Text>
+                    {/* 家野 */}
+                    <View className="flex-1">
+                      <Text className="block text-xs font-medium mb-2 text-gray-700">家野</Text>
+                      <View className="flex flex-row gap-1">
+                        <View
+                          onClick={() => toggleAnimalType('家禽')}
+                          className={`flex-1 rounded-lg px-2 py-2 text-center ${
+                            filterConditions.animalTypes.includes('家禽')
+                              ? 'bg-yellow-600 text-white'
+                              : 'bg-yellow-50 text-yellow-700'
+                          }`}
+                        >
+                          <Text className="text-xs font-medium">家禽</Text>
+                        </View>
+                        <View
+                          onClick={() => toggleAnimalType('野兽')}
+                          className={`flex-1 rounded-lg px-2 py-2 text-center ${
+                            filterConditions.animalTypes.includes('野兽')
+                              ? 'bg-pink-600 text-white'
+                              : 'bg-pink-50 text-pink-700'
+                          }`}
+                        >
+                          <Text className="text-xs font-medium">野兽</Text>
+                        </View>
+                      </View>
                     </View>
                   </View>
                 </View>
 
-                {/* 头数选择 */}
+                {/* 第三行：生肖（分两行） */}
                 <View>
-                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">头数（可多选）</Text>
+                  <Text className="block text-xs font-medium mb-2 text-gray-700">生肖</Text>
+                  <View className="space-y-1.5">
+                    <View className="grid grid-cols-6 gap-1">
+                      {['鼠', '牛', '虎', '兔', '龙', '蛇'].map(zodiac => (
+                        <View
+                          key={zodiac}
+                          onClick={() => toggleZodiac(zodiac)}
+                          className={`rounded-lg px-2 py-2 text-center ${
+                            filterConditions.zodiacs.includes(zodiac)
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-blue-50 text-blue-700'
+                          }`}
+                        >
+                          <Text className="text-xs font-medium">{zodiac}</Text>
+                        </View>
+                      ))}
+                    </View>
+                    <View className="grid grid-cols-6 gap-1">
+                      {['马', '羊', '猴', '鸡', '狗', '猪'].map(zodiac => (
+                        <View
+                          key={zodiac}
+                          onClick={() => toggleZodiac(zodiac)}
+                          className={`rounded-lg px-2 py-2 text-center ${
+                            filterConditions.zodiacs.includes(zodiac)
+                              ? 'bg-blue-600 text-white'
+                              : 'bg-blue-50 text-blue-700'
+                          }`}
+                        >
+                          <Text className="text-xs font-medium">{zodiac}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+                </View>
+
+                {/* 第四行：头数 */}
+                <View>
+                  <Text className="block text-xs font-medium mb-2 text-gray-700">头数</Text>
                   <View className="grid grid-cols-5 gap-1">
                     {Array.from({ length: 5 }, (_, i) => i).map(head => (
                       <View
                         key={head}
                         onClick={() => toggleHead(head)}
-                        className={`rounded-lg px-2 py-1.5 text-center ${
+                        className={`rounded-lg px-2 py-2 text-center ${
                           filterConditions.heads.includes(head)
                             ? 'bg-cyan-600 text-white'
-                            : 'bg-cyan-100 text-cyan-700'
+                            : 'bg-cyan-50 text-cyan-700'
                         }`}
                       >
                         <Text className="text-xs font-medium">{head}头</Text>
@@ -925,9 +937,49 @@ const IndexPage = () => {
                   </View>
                 </View>
 
-                {/* 单双选择 */}
+                {/* 第五行：尾数 */}
                 <View>
-                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">单双（可多选）</Text>
+                  <Text className="block text-xs font-medium mb-2 text-gray-700">尾数</Text>
+                  <View className="grid grid-cols-5 gap-1">
+                    {Array.from({ length: 10 }, (_, i) => i).map(tail => (
+                      <View
+                        key={tail}
+                        onClick={() => toggleTail(tail)}
+                        className={`rounded-lg px-2 py-2 text-center ${
+                          filterConditions.tails.includes(tail)
+                            ? 'bg-teal-600 text-white'
+                            : 'bg-teal-50 text-teal-700'
+                        }`}
+                      >
+                        <Text className="text-xs font-medium">{tail}尾</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+                {/* 第六行：五行 */}
+                <View>
+                  <Text className="block text-xs font-medium mb-2 text-gray-700">五行</Text>
+                  <View className="grid grid-cols-5 gap-1">
+                    {['金', '木', '水', '火', '土'].map(element => (
+                      <View
+                        key={element}
+                        onClick={() => toggleElement(element)}
+                        className={`rounded-lg px-2 py-2 text-center ${
+                          filterConditions.elements.includes(element)
+                            ? 'bg-purple-600 text-white'
+                            : 'bg-purple-50 text-purple-700'
+                        }`}
+                      >
+                        <Text className="text-xs font-medium">{element}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+                {/* 第七行：单双 */}
+                <View>
+                  <Text className="block text-xs font-medium mb-2 text-gray-700">单双</Text>
                   <View className="flex flex-row gap-2">
                     <View
                       onClick={() => toggleOddEven('单数')}
