@@ -9,7 +9,7 @@ import './index.css'
 type TabType = 'statistics' | 'filter' | 'complex' | 'draft' | 'pick' | 'select'
 
 const IndexPage = () => {
-  const [activeTab, setActiveTab] = useState<TabType>('statistics')
+  const [activeTab, setActiveTab] = useState<TabType>('pick')
   const [inputText, setInputText] = useState('')
   const [numbers, setNumbers] = useState<number[]>([])
   const [zodiacs, setZodiacs] = useState<string[]>([])
@@ -249,11 +249,11 @@ const IndexPage = () => {
         <ScrollView scrollX className="whitespace-nowrap">
           <View className="flex flex-row">
             {([
+              { key: 'pick', label: '挑码' },
               { key: 'statistics', label: '统计' },
               { key: 'filter', label: '筛选' },
               { key: 'complex', label: '复式' },
               { key: 'draft', label: '草稿' },
-              { key: 'pick', label: '挑码' },
               { key: 'select', label: '选号' }
             ] as { key: TabType, label: string }[]).map(tab => (
               <View
