@@ -1266,7 +1266,7 @@ const IndexPage = () => {
             {/* 输出结果板块 */}
             <View className="bg-white rounded-xl p-4 shadow-sm">
               <View className="flex flex-row justify-between items-center mb-4">
-                <Text className="block text-lg font-semibold text-gray-800">输出结果</Text>
+                <Text className="block text-lg font-semibold text-gray-800">选号结果</Text>
                 <View className="flex flex-row items-center gap-2">
                   {selectNumbers.length > 0 && (
                     <>
@@ -1337,7 +1337,7 @@ const IndexPage = () => {
               <View className="bg-gray-50 rounded-xl px-4 py-3 mb-3">
                 <Input
                   className="w-full bg-transparent text-base"
-                  placeholder="请输入号码，支持数字或生肖"
+                  placeholder="请输入号码，自动匹配对应生肖"
                   placeholderClass="text-gray-400"
                   value={selectInputText}
                   onInput={handleSelectInputChange}
