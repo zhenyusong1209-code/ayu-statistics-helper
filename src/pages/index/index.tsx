@@ -1,4 +1,4 @@
-import { View, Text, Input, ScrollView } from '@tarojs/components'
+import { View, Text, Input, Textarea, ScrollView } from '@tarojs/components'
 import { useState } from 'react'
 import Taro from '@tarojs/taro'
 import { parseNumbers, countNumbers, getNumberAttributes, getColorClassName, parseZodiacs, countZodiacs, ZODIAC_TO_NUMBERS } from '@/utils/numberParser'
@@ -628,12 +628,15 @@ const IndexPage = () => {
             <View className="bg-white rounded-xl p-4 shadow-sm">
               <Text className="block text-lg font-semibold mb-2 text-gray-800">输入</Text>
               <View className="bg-gray-50 rounded-xl px-4 py-3 mb-3">
-                <Input
+                <Textarea
                   className="w-full bg-transparent text-base"
+                  style={{ width: '100%', minHeight: '100px', backgroundColor: 'transparent' }}
                   placeholder="请输入数字或生肖（生肖可连续输入）"
                   placeholderClass="text-gray-400"
                   value={inputText}
                   onInput={handleInputChange}
+                  maxlength={2000}
+                  autoHeight
                 />
               </View>
               <Text className="text-sm text-gray-500">已识别 {numbers.length} 个数字，{zodiacs.length} 个生肖</Text>
@@ -750,12 +753,15 @@ const IndexPage = () => {
             <View className="bg-white rounded-xl p-4 shadow-sm">
               <Text className="block text-lg font-semibold mb-2 text-gray-800">输入</Text>
               <View className="bg-gray-50 rounded-xl px-4 py-3 mb-3">
-                <Input
+                <Textarea
                   className="w-full bg-transparent text-base"
+                  style={{ width: '100%', minHeight: '100px', backgroundColor: 'transparent' }}
                   placeholder="请输入2个或更多号码或生肖（生肖可连续输入，如：牛羊鸡）"
                   placeholderClass="text-gray-400"
                   value={complexInputText}
                   onInput={handleComplexInputChange}
+                  maxlength={2000}
+                  autoHeight
                 />
               </View>
               <Text className="text-sm text-gray-500">
