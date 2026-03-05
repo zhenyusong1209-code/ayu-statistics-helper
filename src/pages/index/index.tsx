@@ -1,6 +1,8 @@
 import { View, Text, Input, ScrollView } from '@tarojs/components'
 import { useState } from 'react'
 import { parseNumbers, countNumbers, getNumberAttributes } from '@/utils/numberParser'
+import { filterNumbers, toggleArrayItem } from '@/utils/numberFilter'
+import type { FilterConditions } from '@/utils/numberFilter'
 import './index.css'
 
 type TabType = 'statistics' | 'filter' | 'complex' | 'draft' | 'pick' | 'select'
@@ -10,6 +12,16 @@ const IndexPage = () => {
   const [inputText, setInputText] = useState('')
   const [numbers, setNumbers] = useState<number[]>([])
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([])
+  
+  // 挑码筛选条件
+  const [filterConditions, setFilterConditions] = useState<FilterConditions>({
+    zodiacs: [],
+    colors: [],
+    elements: [],
+    sizes: [],
+    tails: [],
+    animalTypes: []
+  })
 
   // 处理输入
   const handleInputChange = (e: any) => {
@@ -36,6 +48,69 @@ const IndexPage = () => {
   // 清空选择
   const clearSelection = () => {
     setSelectedNumbers([])
+  }
+
+  // 清空筛选条件
+  const clearFilters = () => {
+    setFilterConditions({
+      zodiacs: [],
+      colors: [],
+      elements: [],
+      sizes: [],
+      tails: [],
+      animalTypes: []
+    })
+  }
+
+  // 根据筛选条件获取结果
+  const filteredNumbers = filterNumbers(filterConditions)
+
+  // 切换生肖选择
+  const toggleZodiac = (zodiac: string) => {
+    setFilterConditions(prev => ({
+      ...prev,
+      zodiacs: toggleArrayItem(prev.zodiacs, zodiac)
+    }))
+  }
+
+  // 切换波色选择
+  const toggleColor = (color: string) => {
+    setFilterConditions(prev => ({
+      ...prev,
+      colors: toggleArrayItem(prev.colors, color)
+    }))
+  }
+
+  // 切换五行选择
+  const toggleElement = (element: string) => {
+    setFilterConditions(prev => ({
+      ...prev,
+      elements: toggleArrayItem(prev.elements, element)
+    }))
+  }
+
+  // 切换大小选择
+  const toggleSize = (size: string) => {
+    setFilterConditions(prev => ({
+      ...prev,
+      sizes: toggleArrayItem(prev.sizes, size)
+    }))
+  }
+
+  // 切换尾数选择
+  const toggleTail = (tail: number) => {
+    setFilterConditions(prev => ({
+      ...prev,
+      tails: toggleArrayItem(prev.tails, tail)
+    }))
+  }
+
+  // 切换家禽野兽选择
+  const toggleAnimalType = (type: string) => {
+    setFilterConditions(prev => ({
+      ...prev,
+      animalTypes: toggleArrayItem(prev.animalTypes, type)
+    }))
   }
 
   return (
@@ -295,41 +370,207 @@ const IndexPage = () => {
           </View>
         )}
 
-        {/* 挑码区 */}
+        {/* 挑码区 - 重新设计 */}
         {activeTab === 'pick' && (
           <View className="bg-white rounded-xl p-4">
-            <Text className="block text-lg font-semibold mb-4 text-gray-800">智能挑码</Text>
-            <Text className="block text-sm text-gray-500 mb-4">根据统计结果智能推荐号码</Text>
-            
-            <View className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-xl p-6">
-              <Text className="block text-base text-gray-600 text-center">热门号码推荐</Text>
-              <View className="mt-4 flex flex-wrap gap-2 justify-center">
-                {[12, 23, 35, 42, 18, 9, 31, 44].map(num => {
-                  const attrs = getNumberAttributes(num)
-                  return (
-                    <View key={num} className="bg-white rounded-lg px-3 py-2 shadow-sm">
-                      <Text className="text-sm font-bold text-gray-800">{attrs.formatted}</Text>
-                    </View>
-                  )
-                })}
-              </View>
-              <Text className="block text-xs text-gray-400 text-center mt-4">
-                基于历史数据统计分析
-              </Text>
+            <View className="flex flex-row justify-between items-center mb-4">
+              <Text className="block text-lg font-semibold text-gray-800">智能挑码</Text>
+              {(filterConditions.zodiacs.length > 0 ||
+                filterConditions.colors.length > 0 ||
+                filterConditions.elements.length > 0 ||
+                filterConditions.sizes.length > 0 ||
+                filterConditions.tails.length > 0 ||
+                filterConditions.animalTypes.length > 0) && (
+                <View
+                  className="bg-red-100 text-red-600 rounded-lg px-3 py-1.5"
+                  onClick={clearFilters}
+                >
+                  <Text className="text-xs font-medium">清空筛选</Text>
+                </View>
+              )}
             </View>
 
-            <View className="mt-4">
-              <Text className="block text-base font-medium mb-3 text-gray-700">冷门号码</Text>
-              <View className="flex flex-wrap gap-2">
-                {[3, 7, 14, 27, 38, 45, 11, 22].map(num => {
-                  const attrs = getNumberAttributes(num)
-                  return (
-                    <View key={num} className="bg-gray-100 rounded-lg px-3 py-2">
-                      <Text className="text-sm font-medium text-gray-600">{attrs.formatted}</Text>
+            {/* 属性选择区 */}
+            <View className="space-y-3">
+              {/* 生肖选择 */}
+              <View>
+                <Text className="block text-sm font-medium mb-2 text-gray-700">生肖（可多选）</Text>
+                <View className="grid grid-cols-6 gap-1.5">
+                  {['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'].map(zodiac => (
+                    <View
+                      key={zodiac}
+                      onClick={() => toggleZodiac(zodiac)}
+                      className={`rounded-lg px-2 py-1.5 text-center ${
+                        filterConditions.zodiacs.includes(zodiac)
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      <Text className="text-xs font-medium">{zodiac}</Text>
                     </View>
-                  )
-                })}
+                  ))}
+                </View>
               </View>
+
+              {/* 波色选择 */}
+              <View>
+                <Text className="block text-sm font-medium mb-2 text-gray-700">波色（可多选）</Text>
+                <View className="flex flex-row gap-2">
+                  <View
+                    onClick={() => toggleColor('红')}
+                    className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      filterConditions.colors.includes('红')
+                        ? 'bg-red-600 text-white'
+                        : 'bg-red-100 text-red-700'
+                    }`}
+                  >
+                    <Text className="text-xs font-medium">红色</Text>
+                  </View>
+                  <View
+                    onClick={() => toggleColor('蓝')}
+                    className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      filterConditions.colors.includes('蓝')
+                        ? 'bg-blue-600 text-white'
+                        : 'bg-blue-100 text-blue-700'
+                    }`}
+                  >
+                    <Text className="text-xs font-medium">蓝色</Text>
+                  </View>
+                  <View
+                    onClick={() => toggleColor('绿')}
+                    className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      filterConditions.colors.includes('绿')
+                        ? 'bg-green-600 text-white'
+                        : 'bg-green-100 text-green-700'
+                    }`}
+                  >
+                    <Text className="text-xs font-medium">绿色</Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* 五行选择 */}
+              <View>
+                <Text className="block text-sm font-medium mb-2 text-gray-700">五行（可多选）</Text>
+                <View className="grid grid-cols-5 gap-1.5">
+                  {['金', '木', '水', '火', '土'].map(element => (
+                    <View
+                      key={element}
+                      onClick={() => toggleElement(element)}
+                      className={`rounded-lg px-2 py-1.5 text-center ${
+                        filterConditions.elements.includes(element)
+                          ? 'bg-purple-600 text-white'
+                          : 'bg-purple-100 text-purple-700'
+                      }`}
+                    >
+                      <Text className="text-xs font-medium">{element}</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+
+              {/* 大小选择 */}
+              <View>
+                <Text className="block text-sm font-medium mb-2 text-gray-700">大小（可多选）</Text>
+                <View className="flex flex-row gap-2">
+                  <View
+                    onClick={() => toggleSize('小')}
+                    className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      filterConditions.sizes.includes('小')
+                        ? 'bg-orange-600 text-white'
+                        : 'bg-orange-100 text-orange-700'
+                    }`}
+                  >
+                    <Text className="text-xs font-medium">小数</Text>
+                  </View>
+                  <View
+                    onClick={() => toggleSize('大')}
+                    className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      filterConditions.sizes.includes('大')
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-indigo-100 text-indigo-700'
+                    }`}
+                  >
+                    <Text className="text-xs font-medium">大数</Text>
+                  </View>
+                </View>
+              </View>
+
+              {/* 尾数选择 */}
+              <View>
+                <Text className="block text-sm font-medium mb-2 text-gray-700">尾数（可多选）</Text>
+                <View className="grid grid-cols-5 gap-1.5">
+                  {Array.from({ length: 10 }, (_, i) => i).map(tail => (
+                    <View
+                      key={tail}
+                      onClick={() => toggleTail(tail)}
+                      className={`rounded-lg px-2 py-1.5 text-center ${
+                        filterConditions.tails.includes(tail)
+                          ? 'bg-teal-600 text-white'
+                          : 'bg-teal-100 text-teal-700'
+                      }`}
+                    >
+                      <Text className="text-xs font-medium">{tail}尾</Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
+
+              {/* 家禽野兽选择 */}
+              <View>
+                <Text className="block text-sm font-medium mb-2 text-gray-700">家禽野兽（可多选）</Text>
+                <View className="flex flex-row gap-2">
+                  <View
+                    onClick={() => toggleAnimalType('家禽')}
+                    className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      filterConditions.animalTypes.includes('家禽')
+                        ? 'bg-yellow-600 text-white'
+                        : 'bg-yellow-100 text-yellow-700'
+                    }`}
+                  >
+                    <Text className="text-xs font-medium">家禽</Text>
+                  </View>
+                  <View
+                    onClick={() => toggleAnimalType('野兽')}
+                    className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      filterConditions.animalTypes.includes('野兽')
+                        ? 'bg-pink-600 text-white'
+                        : 'bg-pink-100 text-pink-700'
+                    }`}
+                  >
+                    <Text className="text-xs font-medium">野兽</Text>
+                  </View>
+                </View>
+              </View>
+            </View>
+
+            {/* 筛选结果 */}
+            <View className="mt-4 pt-4 border-t border-gray-200">
+              <View className="flex flex-row justify-between items-center mb-3">
+                <Text className="block text-base font-semibold text-gray-800">
+                  筛选结果
+                </Text>
+                <Text className="text-sm text-gray-500">
+                  共 {filteredNumbers.length} 个号码
+                </Text>
+              </View>
+
+              {filteredNumbers.length > 0 ? (
+                <View className="grid grid-cols-7 gap-1.5">
+                  {filteredNumbers.map(num => {
+                    const attrs = getNumberAttributes(num)
+                    return (
+                      <View key={num} className="bg-blue-50 rounded-lg px-2 py-2 text-center">
+                        <Text className="text-sm font-bold text-blue-700">{attrs.formatted}</Text>
+                      </View>
+                    )
+                  })}
+                </View>
+              ) : (
+                <View className="bg-gray-50 rounded-xl p-6 text-center">
+                  <Text className="text-sm text-gray-400">请选择筛选条件</Text>
+                </View>
+              )}
             </View>
           </View>
         )}
