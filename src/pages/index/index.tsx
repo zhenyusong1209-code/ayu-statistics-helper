@@ -249,24 +249,24 @@ const IndexPage = () => {
     let text = ''
     
     if (type === 'number') {
-      // 数字统计复制
+      // 数字统计复制：只复制数字，不包含"X次："前缀
       Object.keys(groupedNumbers)
         .map(Number)
         .filter(count => groupedNumbers[count]?.length > 0)
         .sort((a, b) => a - b)
         .forEach(count => {
           const nums = groupedNumbers[count].sort((a, b) => a - b)
-          text += `${count}次：${nums.map(n => n < 10 ? `0${n}` : n).join(' ')}\n`
+          text += nums.map(n => n < 10 ? `0${n}` : n).join(' ') + '\n'
         })
     } else {
-      // 生肖统计复制
+      // 生肖统计复制：只复制生肖，不包含"X次："前缀
       Object.keys(groupedZodiacs)
         .map(Number)
         .filter(count => groupedZodiacs[count]?.length > 0)
         .sort((a, b) => a - b)
         .forEach(count => {
           const zodiacList = groupedZodiacs[count].sort()
-          text += `${count}次：${zodiacList.join(' ')}\n`
+          text += zodiacList.join(' ') + '\n'
         })
     }
     
@@ -383,13 +383,13 @@ const IndexPage = () => {
     let resultText = ''
     
     if (isZodiacMode) {
-      // 生肖模式：生成"牛羊 牛鸡"这样的格式
+      // 生肖模式：只复制生肖组合
       resultText = complexResults.map((combination) => {
         const zodiacList = combination as string[]
-        return `复${complexType}结果：${zodiacList.join(' ')}`
+        return zodiacList.join(' ')
       }).join('\n')
     } else {
-      // 数字模式：生成"01 02 03"这样的格式
+      // 数字模式：只复制数字
       resultText = complexResults.map((combination) => {
         const nums = combination as number[]
         return nums.map(num => num < 10 ? `0${num}` : `${num}`).join(' ')
