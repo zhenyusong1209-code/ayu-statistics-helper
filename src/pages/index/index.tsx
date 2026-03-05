@@ -976,33 +976,6 @@ const IndexPage = () => {
                     ))}
                   </View>
                 </View>
-
-                {/* 第七行：单双 */}
-                <View>
-                  <Text className="block text-xs font-medium mb-2 text-gray-700">单双</Text>
-                  <View className="flex flex-row gap-2">
-                    <View
-                      onClick={() => toggleOddEven('单数')}
-                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
-                        filterConditions.oddEven.includes('单数')
-                          ? 'bg-orange-600 text-white'
-                          : 'bg-orange-100 text-orange-700'
-                      }`}
-                    >
-                      <Text className="text-xs font-medium">单数</Text>
-                    </View>
-                    <View
-                      onClick={() => toggleOddEven('双数')}
-                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
-                        filterConditions.oddEven.includes('双数')
-                          ? 'bg-orange-600 text-white'
-                          : 'bg-orange-100 text-orange-700'
-                      }`}
-                    >
-                      <Text className="text-xs font-medium">双数</Text>
-                    </View>
-                  </View>
-                </View>
               </View>
             </View>
           </View>
