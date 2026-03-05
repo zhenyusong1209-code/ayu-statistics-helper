@@ -505,7 +505,12 @@ const IndexPage = () => {
             {/* 已选号码显示 */}
             {complexNumbers.length > 0 && (
               <View className="bg-white rounded-xl p-4 shadow-sm">
-                <Text className="block text-base font-semibold mb-3 text-gray-800">已选号码</Text>
+                <View className="flex flex-row justify-between items-center mb-3">
+                  <Text className="block text-base font-semibold text-gray-800">已选号码</Text>
+                  <Text className={`text-sm ${complexNumbers.length === 6 ? 'text-green-600' : 'text-orange-600'}`}>
+                    {complexNumbers.length === 6 ? '✓ 已满足' : `还需要 ${6 - complexNumbers.length} 个号码`}
+                  </Text>
+                </View>
                 <View className="flex flex-wrap gap-2">
                   {complexNumbers.sort((a, b) => a - b).map(num => {
                     const attrs = getNumberAttributes(num)
