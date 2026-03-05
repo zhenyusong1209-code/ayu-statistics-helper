@@ -640,7 +640,7 @@ const IndexPage = () => {
             )}
 
             {/* 复式选项 */}
-            {(!isZodiacMode && complexNumbers.length >= 2) || (isZodiacMode && complexZodiacs.length >= 2) && (
+            {((!isZodiacMode && complexNumbers.length >= 2) || (isZodiacMode && complexZodiacs.length >= 2)) && (
               <View className="bg-white rounded-xl p-4 shadow-sm">
                 <Text className="block text-base font-semibold mb-3 text-gray-800">复式选项</Text>
                 <View className="flex flex-row gap-2">
