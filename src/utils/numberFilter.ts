@@ -14,12 +14,24 @@ export interface FilterConditions {
   elements: string[]       // 五行：金木水火土
   sizes: string[]          // 大小：大数小数
   tails: number[]          // 尾数：0-9
+  heads: number[]          // 头数：0-4（十位数）
   animalTypes: string[]    // 家禽野兽：家禽野兽
+  oddEven: string[]        // 单双：单数双数
+}
+
+// 获取数字的头数（十位数）
+function getNumberHead(num: number): number {
+  return Math.floor(num / 10)
+}
+
+// 获取数字的单双性
+function getNumberOddEven(num: number): string {
+  return num % 2 === 0 ? '双数' : '单数'
 }
 
 // 检查号码是否匹配所有选中的条件
 export function isNumberMatched(num: number, conditions: FilterConditions): boolean {
-  const { zodiacs, colors, elements, sizes, tails, animalTypes } = conditions
+  const { zodiacs, colors, elements, sizes, tails, heads, animalTypes, oddEven } = conditions
 
   // 检查生肖
   if (zodiacs.length > 0) {
@@ -51,10 +63,22 @@ export function isNumberMatched(num: number, conditions: FilterConditions): bool
     if (!tails.includes(tail)) return false
   }
 
+  // 检查头数
+  if (heads.length > 0) {
+    const head = getNumberHead(num)
+    if (!heads.includes(head)) return false
+  }
+
   // 检查家禽野兽
   if (animalTypes.length > 0) {
     const animalType = getNumberAnimalType(num)
     if (!animalTypes.includes(animalType)) return false
+  }
+
+  // 检查单双
+  if (oddEven.length > 0) {
+    const oddEvenValue = getNumberOddEven(num)
+    if (!oddEven.includes(oddEvenValue)) return false
   }
 
   return true
@@ -62,7 +86,7 @@ export function isNumberMatched(num: number, conditions: FilterConditions): bool
 
 // 根据筛选条件获取符合条件的号码
 export function filterNumbers(conditions: FilterConditions): number[] {
-  const { zodiacs, colors, elements, sizes, tails, animalTypes } = conditions
+  const { zodiacs, colors, elements, sizes, tails, heads, animalTypes, oddEven } = conditions
   
   // 如果没有任何筛选条件，返回空数组
   if (
@@ -71,7 +95,9 @@ export function filterNumbers(conditions: FilterConditions): number[] {
     elements.length === 0 &&
     sizes.length === 0 &&
     tails.length === 0 &&
-    animalTypes.length === 0
+    heads.length === 0 &&
+    animalTypes.length === 0 &&
+    oddEven.length === 0
   ) {
     return []
   }
