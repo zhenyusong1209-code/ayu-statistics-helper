@@ -376,24 +376,24 @@ const IndexPage = () => {
     let text = ''
     
     if (type === 'number') {
-      // 数字统计复制：只复制数字，不包含"X次："前缀
+      // 数字统计复制：包含完整格式"X次：号码列表"
       Object.keys(groupedNumbers)
         .map(Number)
         .filter(count => groupedNumbers[count]?.length > 0)
         .sort((a, b) => a - b)
         .forEach(count => {
           const nums = groupedNumbers[count].sort((a, b) => a - b)
-          text += nums.map(n => n < 10 ? `0${n}` : n).join(' ') + '\n'
+          text += `${count}次：` + nums.map(n => n < 10 ? `0${n}` : n).join(' ') + '\n'
         })
     } else {
-      // 生肖统计复制：只复制生肖，不包含"X次："前缀
+      // 生肖统计复制：包含完整格式"X次：生肖列表"
       Object.keys(groupedZodiacs)
         .map(Number)
         .filter(count => groupedZodiacs[count]?.length > 0)
         .sort((a, b) => a - b)
         .forEach(count => {
           const zodiacList = groupedZodiacs[count].sort()
-          text += zodiacList.join(' ') + '\n'
+          text += `${count}次：` + zodiacList.join(' ') + '\n'
         })
     }
     
