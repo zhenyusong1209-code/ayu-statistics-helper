@@ -6,7 +6,7 @@ import { filterNumbers, toggleArrayItem, isNumberMatched } from '@/utils/numberF
 import type { FilterConditions } from '@/utils/numberFilter'
 import './index.css'
 
-type TabType = 'statistics' | 'filter' | 'complex' | 'draft' | 'pick' | 'select'
+type TabType = 'statistics' | 'filter' | 'complex' | 'pick' | 'select' | 'about'
 
 const IndexPage = () => {
   const [activeTab, setActiveTab] = useState<TabType>('pick')
@@ -253,8 +253,8 @@ const IndexPage = () => {
               { key: 'statistics', label: '统计' },
               { key: 'filter', label: '筛选' },
               { key: 'complex', label: '复式' },
-              { key: 'draft', label: '草稿' },
-              { key: 'select', label: '选号' }
+              { key: 'select', label: '选号' },
+              { key: 'about', label: '关于我们' }
             ] as { key: TabType, label: string }[]).map(tab => (
               <View
                 key={tab.key}
@@ -678,15 +678,23 @@ const IndexPage = () => {
           </View>
         )}
 
-        {/* 草稿区 */}
-        {activeTab === 'draft' && (
+        {/* 关于我们区 */}
+        {activeTab === 'about' && (
           <View className="bg-white rounded-xl p-4">
-            <Text className="block text-lg font-semibold mb-4 text-gray-800">草稿记录</Text>
-            <Text className="block text-sm text-gray-500 mb-4">记录您的选号组合，方便后续分析</Text>
+            <Text className="block text-lg font-semibold mb-4 text-gray-800">关于我们</Text>
             
+            {/* 使用声明 */}
+            <View className="bg-orange-50 rounded-xl p-4 mb-4">
+              <Text className="block text-base font-semibold mb-2 text-orange-800">使用声明</Text>
+              <Text className="block text-sm text-orange-700 leading-relaxed">
+                本软件仅供学习交流，请确保您在使用本软件时遵守当地法律法规，不得用于任何违法活动！
+              </Text>
+            </View>
+            
+            {/* 更多内容（暂时不设置） */}
             <View className="bg-gray-50 rounded-xl p-6 text-center">
-              <Text className="text-base text-gray-400">暂无草稿记录</Text>
-              <Text className="text-sm text-gray-400 mt-2">点击复式或选号保存组合</Text>
+              <Text className="text-base text-gray-400">更多内容即将上线</Text>
+              <Text className="text-sm text-gray-400 mt-2">敬请期待</Text>
             </View>
           </View>
         )}
