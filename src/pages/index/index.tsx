@@ -916,7 +916,7 @@ const IndexPage = () => {
             {/* 筛选结果区 - 仅在有结果时显示 */}
             {filteredNumbers.length > 0 && (
               <View className="bg-white rounded-xl p-3 shadow-sm">
-                <View className="flex flex-row justify-between items-center mb-2">
+                <View className="flex flex-row justify-between items-center mb-3">
                   <Text className="block text-base font-semibold text-gray-800">
                     筛选结果
                   </Text>
@@ -933,26 +933,9 @@ const IndexPage = () => {
                   </View>
                 </View>
 
-                <View className="rounded-lg p-4 min-h-[80px] bg-white">
-                  <View className="grid grid-cols-10 gap-1.5 w-full">
-                    {filteredNumbers.map(num => {
-                      const attrs = getNumberAttributes(num)
-                      return (
-                        <View
-                          key={num}
-                          className={`w-7 h-7 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}
-                        >
-                          <Text className="text-xs font-bold">{attrs.formatted}</Text>
-                        </View>
-                      )
-                    })}
-                  </View>
-                </View>
-
                 {/* 生肖展示 - 一行展示完 */}
-                <View className="mt-3 pt-3 border-t border-gray-100">
-                  <View className="grid grid-cols-12 gap-1.5">
-                    {ZODIAC_LIST.map(zodiac => {
+                <View className="grid grid-cols-12 gap-1.5">
+                  {ZODIAC_LIST.map(zodiac => {
                       const filteredNums = getFilteredNumbersByZodiac()[zodiac]
                       return (
                         <View key={zodiac} className="flex flex-col items-center">
@@ -985,7 +968,6 @@ const IndexPage = () => {
                     })}
                   </View>
                 </View>
-              </View>
             )}
 
             {/* 属性选择区 - 占70%空间 */}
