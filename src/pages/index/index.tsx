@@ -399,34 +399,27 @@ const IndexPage = () => {
         {/* 挑码区 */}
         {activeTab === 'pick' && (
           <View className="space-y-3">
-            {/* 筛选结果区 - 占30%空间 */}
-            <View className="bg-white rounded-xl p-3 shadow-sm">
-              <View className="flex flex-row justify-between items-center mb-2">
-                <Text className="block text-base font-semibold text-gray-800">
-                  筛选结果
-                </Text>
-                <View className="flex flex-row items-center gap-2">
-                  {filteredNumbers.length > 0 && (
+            {/* 筛选结果区 - 仅在有结果时显示 */}
+            {filteredNumbers.length > 0 && (
+              <View className="bg-white rounded-xl p-3 shadow-sm">
+                <View className="flex flex-row justify-between items-center mb-2">
+                  <Text className="block text-base font-semibold text-gray-800">
+                    筛选结果
+                  </Text>
+                  <View className="flex flex-row items-center gap-2">
                     <Text className="text-xs text-gray-500">
                       {filteredNumbers.length} 个
                     </Text>
-                  )}
-                  {filteredNumbers.length > 0 && (
                     <View
                       className="bg-blue-100 text-blue-600 rounded-lg px-2 py-1"
                       onClick={copyResults}
                     >
                       <Text className="text-xs font-medium">复制</Text>
                     </View>
-                  )}
+                  </View>
                 </View>
-              </View>
 
-              <View className={`rounded-lg p-4 min-h-[80px] flex items-center justify-center ${
-                filteredNumbers.length === 0 ? 'bg-gray-50' : 'bg-white'
-              }`}
-              >
-                {filteredNumbers.length > 0 ? (
+                <View className="rounded-lg p-4 min-h-[80px] bg-white">
                   <View className="grid grid-cols-7 gap-1.5 w-full">
                     {filteredNumbers.map(num => {
                       const attrs = getNumberAttributes(num)
@@ -440,9 +433,9 @@ const IndexPage = () => {
                       )
                     })}
                   </View>
-                ) : null}
+                </View>
               </View>
-            </View>
+            )}
 
             {/* 属性选择区 - 占70%空间 */}
             <View className="bg-white rounded-xl p-4 shadow-sm">
