@@ -902,6 +902,14 @@ const IndexPage = () => {
               </Text>
             </View>
             
+            {/* 反馈联系 */}
+            <View className="bg-blue-50 rounded-xl p-4 mb-4">
+              <Text className="block text-base font-semibold mb-2 text-blue-800">反馈联系我们</Text>
+              <Text className="block text-sm text-blue-700 leading-relaxed">
+                QQ：936181891
+              </Text>
+            </View>
+            
             {/* 更多内容（暂时不设置） */}
             <View className="bg-gray-50 rounded-xl p-6 text-center">
               <Text className="text-base text-gray-400">更多内容即将上线</Text>
