@@ -251,29 +251,6 @@ const IndexPage = () => {
                       </View>
                     ))}
                 </View>
-
-                {/* 号码属性说明 */}
-                <View className="mt-6 pt-4 border-t border-gray-200">
-                  <Text className="block text-base font-semibold mb-3 text-gray-800">号码属性</Text>
-                  <View className="grid grid-cols-2 gap-2">
-                    <View className="bg-gray-50 rounded-lg p-3">
-                      <Text className="block text-sm font-medium text-gray-700">生肖</Text>
-                      <Text className="text-xs text-gray-500 mt-1">鼠牛虎兔龙蛇马羊猴鸡狗猪</Text>
-                    </View>
-                    <View className="bg-gray-50 rounded-lg p-3">
-                      <Text className="block text-sm font-medium text-gray-700">波色</Text>
-                      <Text className="text-xs text-gray-500 mt-1">红/蓝/绿三色</Text>
-                    </View>
-                    <View className="bg-gray-50 rounded-lg p-3">
-                      <Text className="block text-sm font-medium text-gray-700">五行</Text>
-                      <Text className="text-xs text-gray-500 mt-1">金木水火土</Text>
-                    </View>
-                    <View className="bg-gray-50 rounded-lg p-3">
-                      <Text className="block text-sm font-medium text-gray-700">大小</Text>
-                      <Text className="text-xs text-gray-500 mt-1">1-24小数，25-49大数</Text>
-                    </View>
-                  </View>
-                </View>
               </View>
             )}
           </View>
