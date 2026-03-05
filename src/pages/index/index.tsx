@@ -35,6 +35,24 @@ const IndexPage = () => {
   // 统计数据
   const statistics = countNumbers(numbers)
 
+  // 按出现次数分组号码
+  const groupNumbersByCount = () => {
+    const groups: Record<number, number[]> = {}
+    
+    // 初始化所有号码
+    for (let num = 1; num <= 49; num++) {
+      const count = statistics[num]
+      if (!groups[count]) {
+        groups[count] = []
+      }
+      groups[count].push(num)
+    }
+    
+    return groups
+  }
+
+  const groupedNumbers = groupNumbersByCount()
+
   // 切换号码选中状态
   const toggleNumber = (num: number) => {
     setSelectedNumbers(prev => {
@@ -189,55 +207,75 @@ const IndexPage = () => {
             </View>
 
             {/* 统计结果区 */}
-            <View className="bg-white rounded-xl p-4 shadow-sm">
-              <Text className="block text-lg font-semibold mb-4 text-gray-800">统计结果</Text>
-              
-              {/* 统计表格 */}
-              <View className="space-y-3">
-                {Array.from({ length: 5 }, (_, i) => i * 10).map(start => (
-                  <View key={start} className="flex flex-row items-center">
-                    {/* 号码行 */}
-                    <View className="flex flex-row justify-between flex-1">
-                      {Array.from({ length: 10 }, (_, j) => start + j + 1).slice(0, 9).map(num => {
-                        const count = statistics[num]
-                        const attrs = getNumberAttributes(num)
-                        return (
-                          <View key={num} className="flex flex-col items-center flex-1">
-                            <Text className="text-sm font-medium text-gray-700 mb-1">{attrs.formatted}</Text>
-                            <View className="w-6 h-6 rounded-full flex items-center justify-center bg-blue-100">
-                              <Text className="text-xs font-bold text-blue-600">{count > 0 ? count : '-'}</Text>
+            {numbers.length > 0 && (
+              <View className="bg-white rounded-xl p-4 shadow-sm">
+                <Text className="block text-lg font-semibold mb-4 text-gray-800">统计结果</Text>
+                
+                {/* 按出现次数分组展示 */}
+                <View className="space-y-3">
+                  {/* 0次 */}
+                  {groupedNumbers[0] && groupedNumbers[0].length > 0 && (
+                    <View className="flex flex-row items-start">
+                      <Text className="text-sm font-medium text-gray-700 w-12">0次：</Text>
+                      <View className="flex-1 flex flex-wrap gap-1.5">
+                        {groupedNumbers[0].sort((a, b) => a - b).map(num => {
+                          const attrs = getNumberAttributes(num)
+                          return (
+                            <View key={num} className={`w-8 h-8 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}>
+                              <Text className="text-xs font-bold">{attrs.formatted}</Text>
                             </View>
-                          </View>
-                        )
-                      })}
+                          )
+                        })}
+                      </View>
                     </View>
-                  </View>
-                ))}
-              </View>
+                  )}
+                  
+                  {/* 其他次数 */}
+                  {Object.keys(groupedNumbers)
+                    .map(Number)
+                    .filter(count => count > 0)
+                    .sort((a, b) => a - b)
+                    .map(count => (
+                      <View key={count} className="flex flex-row items-start">
+                        <Text className="text-sm font-medium text-gray-700 w-12">{count}次：</Text>
+                        <View className="flex-1 flex flex-wrap gap-1.5">
+                          {groupedNumbers[count].sort((a, b) => a - b).map(num => {
+                            const attrs = getNumberAttributes(num)
+                            return (
+                              <View key={num} className={`w-8 h-8 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}>
+                                <Text className="text-xs font-bold">{attrs.formatted}</Text>
+                              </View>
+                            )
+                          })}
+                        </View>
+                      </View>
+                    ))}
+                </View>
 
-              {/* 号码属性说明 */}
-              <View className="mt-6 pt-4 border-t border-gray-200">
-                <Text className="block text-base font-semibold mb-3 text-gray-800">号码属性</Text>
-                <View className="grid grid-cols-2 gap-2">
-                  <View className="bg-gray-50 rounded-lg p-3">
-                    <Text className="block text-sm font-medium text-gray-700">生肖</Text>
-                    <Text className="text-xs text-gray-500 mt-1">鼠牛虎兔龙蛇马羊猴鸡狗猪</Text>
-                  </View>
-                  <View className="bg-gray-50 rounded-lg p-3">
-                    <Text className="block text-sm font-medium text-gray-700">波色</Text>
-                    <Text className="text-xs text-gray-500 mt-1">红/蓝/绿三色</Text>
-                  </View>
-                  <View className="bg-gray-50 rounded-lg p-3">
-                    <Text className="block text-sm font-medium text-gray-700">五行</Text>
-                    <Text className="text-xs text-gray-500 mt-1">金木水火土</Text>
-                  </View>
-                  <View className="bg-gray-50 rounded-lg p-3">
-                    <Text className="block text-sm font-medium text-gray-700">大小</Text>
-                    <Text className="text-xs text-gray-500 mt-1">1-24小数，25-49大数</Text>
+                {/* 号码属性说明 */}
+                <View className="mt-6 pt-4 border-t border-gray-200">
+                  <Text className="block text-base font-semibold mb-3 text-gray-800">号码属性</Text>
+                  <View className="grid grid-cols-2 gap-2">
+                    <View className="bg-gray-50 rounded-lg p-3">
+                      <Text className="block text-sm font-medium text-gray-700">生肖</Text>
+                      <Text className="text-xs text-gray-500 mt-1">鼠牛虎兔龙蛇马羊猴鸡狗猪</Text>
+                    </View>
+                    <View className="bg-gray-50 rounded-lg p-3">
+                      <Text className="block text-sm font-medium text-gray-700">波色</Text>
+                      <Text className="text-xs text-gray-500 mt-1">红/蓝/绿三色</Text>
+                    </View>
+                    <View className="bg-gray-50 rounded-lg p-3">
+                      <Text className="block text-sm font-medium text-gray-700">五行</Text>
+                      <Text className="text-xs text-gray-500 mt-1">金木水火土</Text>
+                    </View>
+                    <View className="bg-gray-50 rounded-lg p-3">
+                      <Text className="block text-sm font-medium text-gray-700">大小</Text>
+                      <Text className="text-xs text-gray-500 mt-1">1-24小数，25-49大数</Text>
+                    </View>
                   </View>
                 </View>
               </View>
-            </View>
+            )}
           </View>
         )}
 
