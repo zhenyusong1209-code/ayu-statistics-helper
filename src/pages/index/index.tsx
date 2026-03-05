@@ -612,15 +612,13 @@ const IndexPage = () => {
                   {groupedNumbers[0] && groupedNumbers[0].length > 0 && (
                     <View className="flex flex-row items-start">
                       <Text selectable className="text-sm font-medium text-gray-700 w-12">0次：</Text>
-                      <View className="flex-1 flex flex-wrap gap-1.5">
-                        {groupedNumbers[0].sort((a, b) => a - b).map(num => {
-                          const attrs = getNumberAttributes(num)
-                          return (
-                            <View key={num} className={`w-8 h-8 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}>
-                              <Text selectable className="text-xs font-bold">{attrs.formatted}</Text>
-                            </View>
-                          )
-                        })}
+                      <View className="flex-1">
+                        <Text selectable className="text-sm text-gray-700">
+                          {groupedNumbers[0].sort((a, b) => a - b).map(num => {
+                            const attrs = getNumberAttributes(num)
+                            return attrs.formatted
+                          }).join(' ')}
+                        </Text>
                       </View>
                     </View>
                   )}
@@ -633,15 +631,13 @@ const IndexPage = () => {
                     .map(count => (
                       <View key={count} className="flex flex-row items-start">
                         <Text selectable className="text-sm font-medium text-gray-700 w-12">{count}次：</Text>
-                        <View className="flex-1 flex flex-wrap gap-1.5">
-                          {groupedNumbers[count].sort((a, b) => a - b).map(num => {
-                            const attrs = getNumberAttributes(num)
-                            return (
-                              <View key={num} className={`w-8 h-8 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}>
-                                <Text selectable className="text-xs font-bold">{attrs.formatted}</Text>
-                              </View>
-                            )
-                          })}
+                        <View className="flex-1">
+                          <Text selectable className="text-sm text-gray-700">
+                            {groupedNumbers[count].sort((a, b) => a - b).map(num => {
+                              const attrs = getNumberAttributes(num)
+                              return attrs.formatted
+                            }).join(' ')}
+                          </Text>
                         </View>
                       </View>
                     ))}
