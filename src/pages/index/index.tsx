@@ -541,36 +541,40 @@ const IndexPage = () => {
   }
 
   return (
-    <View className="flex flex-col h-screen bg-gray-50">
+    <View className="flex flex-col min-h-screen bg-gray-50">
       {/* 标签页 */}
-      <View className="bg-white border-b border-gray-200">
-        <ScrollView scrollX className="whitespace-nowrap">
-          <View className="flex flex-row">
-            {([
-              { key: 'pick', label: '挑码' },
-              { key: 'statistics', label: '统计' },
-              { key: 'complex', label: '复式' },
-              { key: 'select', label: '选号' },
-              { key: 'about', label: '关于我们' }
-            ] as { key: TabType, label: string }[]).map(tab => (
-              <View
-                key={tab.key}
-                className={`px-4 py-3 text-base font-medium cursor-pointer ${
-                  activeTab === tab.key
-                    ? 'text-blue-600 border-b-2 border-blue-600'
-                    : 'text-gray-600'
-                }`}
-                onClick={() => setActiveTab(tab.key)}
-              >
-                <Text className="block">{tab.label}</Text>
-              </View>
-            ))}
-          </View>
-        </ScrollView>
+      <View className="bg-white border-b border-gray-200 w-full">
+        <View className="max-w-4xl mx-auto">
+          <ScrollView scrollX className="whitespace-nowrap">
+            <View className="flex flex-row">
+              {([
+                { key: 'pick', label: '挑码' },
+                { key: 'statistics', label: '统计' },
+                { key: 'complex', label: '复式' },
+                { key: 'select', label: '选号' },
+                { key: 'about', label: '关于我们' }
+              ] as { key: TabType, label: string }[]).map(tab => (
+                <View
+                  key={tab.key}
+                  className={`px-4 py-3 text-base font-medium cursor-pointer ${
+                    activeTab === tab.key
+                      ? 'text-blue-600 border-b-2 border-blue-600'
+                      : 'text-gray-600'
+                  }`}
+                  onClick={() => setActiveTab(tab.key)}
+                >
+                  <Text className="block">{tab.label}</Text>
+                </View>
+              ))}
+            </View>
+          </ScrollView>
+        </View>
       </View>
 
       {/* 内容区 */}
-      <ScrollView className="flex-1 p-4">
+      <View className="flex-1 w-full">
+        <View className="max-w-4xl mx-auto w-full p-4">
+          <ScrollView scrollY className="h-full">
         {/* 统计区 */}
         {activeTab === 'statistics' && (
           <View className="space-y-4">
@@ -1244,6 +1248,8 @@ const IndexPage = () => {
           </View>
         )}
       </ScrollView>
+      </View>
+      </View>
     </View>
   )
 }
