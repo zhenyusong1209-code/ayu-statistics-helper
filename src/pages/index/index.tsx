@@ -148,11 +148,17 @@ const IndexPage = () => {
 
   // 获取生肖下被选中的号码（根据可见性过滤）
   const getVisibleNumbersByZodiac = (zodiac: string): number[] => {
-    if (!isZodiacVisible(zodiac) || !isZodiacSelected(zodiac)) {
+    if (!isZodiacVisible(zodiac)) {
       return []
     }
+    // 如果生肖被选中，返回被选中的号码
+    // 如果生肖未被选中但在可见集合中，返回该生肖的所有号码
     const zodiacNumbers = ZODIAC_TO_NUMBERS[zodiac] || []
-    return zodiacNumbers.filter(num => selectNumbers.includes(num))
+    if (isZodiacSelected(zodiac)) {
+      return zodiacNumbers.filter(num => selectNumbers.includes(num))
+    } else {
+      return zodiacNumbers
+    }
   }
 
   // 复制选号结果
@@ -1153,14 +1159,10 @@ const IndexPage = () => {
                     <View key={zodiac} className="flex flex-col items-center">
                       {/* 生肖名称 - 可点击 */}
                       <View 
-                        className={`w-8 h-8 rounded-lg flex items-center justify-center mb-1.5 ${
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center mb-1.5 cursor-pointer ${
                           isSelected ? 'bg-black' : 'bg-gray-300'
-                        } ${isSelected ? 'cursor-pointer' : ''}`}
-                        onClick={() => {
-                          if (isSelected) {
-                            toggleZodiacVisibility(zodiac)
-                          }
-                        }}
+                        }`}
+                        onClick={() => toggleZodiacVisibility(zodiac)}
                       >
                         <Text className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-gray-500'}`}>
                           {zodiac}
@@ -1191,7 +1193,7 @@ const IndexPage = () => {
               {/* 提示文字 */}
               {selectNumbers.length > 0 && (
                 <Text className="text-xs text-gray-400 mt-3 text-center">
-                  点击黑色生肖显示/隐藏号码
+                  点击生肖显示/隐藏号码
                 </Text>
               )}
             </View>
