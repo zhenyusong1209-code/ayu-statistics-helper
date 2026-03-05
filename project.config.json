@@ -1,7 +1,7 @@
 {
   "miniprogramRoot": "./dist",
-  "projectname": "coze-mini-program",
-  "description": "test",
+  "projectname": "AYU统计助手",
+  "description": "AYU统计助手 - 号码统计与筛选工具",
   "appid": "touristappid",
   "setting": {
     "urlCheck": true,
