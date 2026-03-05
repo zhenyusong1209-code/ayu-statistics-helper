@@ -15,6 +15,12 @@ const IndexPage = () => {
   const [zodiacs, setZodiacs] = useState<string[]>([])
   const [selectedNumbers, setSelectedNumbers] = useState<number[]>([])
   
+  // 复式相关状态
+  const [complexInputText, setComplexInputText] = useState('')
+  const [complexNumbers, setComplexNumbers] = useState<number[]>([])
+  const [complexType, setComplexType] = useState<number | null>(null) // 2, 3, 4, 5
+  const [complexResults, setComplexResults] = useState<number[][]>([])
+  
   // 挑码筛选条件
   const [filterConditions, setFilterConditions] = useState<FilterConditions>({
     zodiacs: [],
@@ -92,6 +98,82 @@ const IndexPage = () => {
   // 清空选择
   const clearSelection = () => {
     setSelectedNumbers([])
+  }
+
+  // 处理复式输入
+  const handleComplexInputChange = (e: any) => {
+    const value = e.detail.value
+    setComplexInputText(value)
+    
+    // 解析数字并去重
+    const parsedNumbers = parseNumbers(value)
+    // 去重
+    const uniqueNumbers = Array.from(new Set(parsedNumbers))
+    setComplexNumbers(uniqueNumbers)
+    
+    // 重置复式类型和结果
+    setComplexType(null)
+    setComplexResults([])
+  }
+
+  // 清空复式输入
+  const clearComplexInput = () => {
+    setComplexInputText('')
+    setComplexNumbers([])
+    setComplexType(null)
+    setComplexResults([])
+  }
+
+  // 计算组合数 C(n,k)
+  const calculateCombination = (n: number, k: number): number => {
+    if (k > n || k < 0) return 0
+    if (k === 0 || k === n) return 1
+    
+    let result = 1
+    for (let i = 0; i < k; i++) {
+      result = result * (n - i) / (i + 1)
+    }
+    return Math.round(result)
+  }
+
+  // 生成所有组合
+  const generateCombinations = (nums: number[], k: number): number[][] => {
+    if (k > nums.length || k < 0) return []
+    if (k === 0) return [[]]
+    if (k === nums.length) return [nums]
+    
+    const result: number[][] = []
+    
+    const backtrack = (start: number, path: number[]) => {
+      if (path.length === k) {
+        result.push([...path])
+        return
+      }
+      
+      for (let i = start; i < nums.length; i++) {
+        path.push(nums[i])
+        backtrack(i + 1, path)
+        path.pop()
+      }
+    }
+    
+    backtrack(0, [])
+    return result
+  }
+
+  // 处理复式类型选择
+  const handleComplexTypeSelect = (k: number) => {
+    if (complexNumbers.length !== 6) {
+      Taro.showToast({
+        title: '请输入6个号码',
+        icon: 'none'
+      })
+      return
+    }
+    
+    setComplexType(k)
+    const combinations = generateCombinations(complexNumbers, k)
+    setComplexResults(combinations)
   }
 
   // 清空筛选条件
@@ -401,47 +483,112 @@ const IndexPage = () => {
 
         {/* 复式区 */}
         {activeTab === 'complex' && (
-          <View className="bg-white rounded-xl p-4">
-            <Text className="block text-lg font-semibold mb-4 text-gray-800">复式计算</Text>
-            <Text className="block text-sm text-gray-500 mb-4">选择多个号码进行复式组合</Text>
-            
-            <View className="space-y-2">
-              {Array.from({ length: 7 }, (_, i) => i * 7).map(start => (
-                <View key={start} className="flex flex-row justify-between items-center py-2">
-                  {Array.from({ length: 7 }, (_, j) => start + j + 1).map(num => {
+          <View className="space-y-3">
+            {/* 输入区 */}
+            <View className="bg-white rounded-xl p-4 shadow-sm">
+              <Text className="block text-lg font-semibold mb-2 text-gray-800">输入</Text>
+              <View className="bg-gray-50 rounded-xl px-4 py-3 mb-3">
+                <Input
+                  className="w-full bg-transparent text-base"
+                  placeholder="请输入6个号码（输入规则同统计模块）"
+                  placeholderClass="text-gray-400"
+                  value={complexInputText}
+                  onInput={handleComplexInputChange}
+                />
+              </View>
+              <Text className="text-sm text-gray-500">
+                已识别 {complexNumbers.length} 个号码
+                {complexNumbers.length === 6 && '，可以进行复式计算'}
+              </Text>
+            </View>
+
+            {/* 已选号码显示 */}
+            {complexNumbers.length > 0 && (
+              <View className="bg-white rounded-xl p-4 shadow-sm">
+                <Text className="block text-base font-semibold mb-3 text-gray-800">已选号码</Text>
+                <View className="flex flex-wrap gap-2">
+                  {complexNumbers.sort((a, b) => a - b).map(num => {
                     const attrs = getNumberAttributes(num)
                     return (
-                      <View
-                        key={num}
-                        onClick={() => toggleNumber(num)}
-                        className={`flex-1 flex flex-col items-center py-2 rounded-lg cursor-pointer ${
-                          selectedNumbers.includes(num) ? 'bg-blue-600' : 'bg-gray-50'
-                        }`}
-                      >
-                        <Text className={`text-sm font-medium ${
-                          selectedNumbers.includes(num) ? 'text-white' : 'text-gray-700'
-                        }`}
-                        >
-                          {attrs.formatted}
-                        </Text>
+                      <View key={num} className={`w-8 h-8 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}>
+                        <Text className="text-xs font-bold">{attrs.formatted}</Text>
                       </View>
                     )
                   })}
                 </View>
-              ))}
-            </View>
+              </View>
+            )}
 
-            <View className="mt-4 pt-4 border-t border-gray-200">
-              <Text className="block text-base text-gray-700">已选择 {selectedNumbers.length} 个号码</Text>
-              <View className="mt-2 flex flex-row gap-2">
-                <View
-                  className="flex-1 bg-red-500 text-white rounded-lg py-3 text-center"
-                  onClick={clearSelection}
-                >
-                  <Text className="text-sm font-medium">清空选择</Text>
+            {/* 复式选项 */}
+            {complexNumbers.length === 6 && (
+              <View className="bg-white rounded-xl p-4 shadow-sm">
+                <Text className="block text-base font-semibold mb-3 text-gray-800">复式选项</Text>
+                <View className="flex flex-row gap-2">
+                  {[
+                    { k: 2, label: '复2', count: calculateCombination(6, 2) },
+                    { k: 3, label: '复3', count: calculateCombination(6, 3) },
+                    { k: 4, label: '复4', count: calculateCombination(6, 4) },
+                    { k: 5, label: '复5', count: calculateCombination(6, 5) }
+                  ].map(item => (
+                    <View
+                      key={item.k}
+                      onClick={() => handleComplexTypeSelect(item.k)}
+                      className={`flex-1 rounded-lg px-3 py-3 text-center cursor-pointer ${
+                        complexType === item.k
+                          ? 'bg-blue-600 text-white'
+                          : 'bg-gray-100 text-gray-700'
+                      }`}
+                    >
+                      <Text className="block text-sm font-medium">{item.label}</Text>
+                      <Text className={`text-xs mt-1 ${complexType === item.k ? 'text-blue-100' : 'text-gray-500'}`}>
+                        {item.count}组
+                      </Text>
+                    </View>
+                  ))}
                 </View>
               </View>
-            </View>
+            )}
+
+            {/* 复式结果 */}
+            {complexResults.length > 0 && (
+              <View className="bg-white rounded-xl p-4 shadow-sm">
+                <View className="flex flex-row justify-between items-center mb-3">
+                  <Text className="block text-base font-semibold text-gray-800">
+                    复式结果（复{complexType}）
+                  </Text>
+                  <Text className="text-sm text-gray-500">共 {complexResults.length} 组</Text>
+                </View>
+                <View className="space-y-2">
+                  {complexResults.map((combination, index) => (
+                    <View key={index} className="flex flex-row items-center justify-between py-2 border-b border-gray-100 last:border-0">
+                      <Text className="text-sm text-gray-600 w-12">第{index + 1}组：</Text>
+                      <View className="flex-1 flex flex-wrap gap-1.5 justify-end">
+                        {combination.map(num => {
+                          const attrs = getNumberAttributes(num)
+                          return (
+                            <View key={num} className={`w-7 h-7 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}>
+                              <Text className="text-xs font-bold">{attrs.formatted}</Text>
+                            </View>
+                          )
+                        })}
+                      </View>
+                    </View>
+                  ))}
+                </View>
+              </View>
+            )}
+
+            {/* 清空按钮 */}
+            {complexInputText && (
+              <View className="flex justify-center">
+                <View
+                  className="bg-red-500 text-white rounded-lg px-6 py-3"
+                  onClick={clearComplexInput}
+                >
+                  <Text className="text-sm font-medium">清空</Text>
+                </View>
+              </View>
+            )}
           </View>
         )}
 
