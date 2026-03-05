@@ -1077,7 +1077,7 @@ const IndexPage = () => {
               </View>
 
               {/* 生肖展示 - 一行展示完 */}
-              <View className="grid grid-cols-12 gap-2">
+              <View className="grid grid-cols-12 gap-1.5">
                 {ZODIAC_LIST.map(zodiac => {
                   const isSelected = isZodiacSelected(zodiac)
                   const selectedNums = getSelectedNumbersByZodiac(zodiac)
@@ -1085,22 +1085,22 @@ const IndexPage = () => {
                     <View key={zodiac} className="flex flex-col items-center">
                       {/* 生肖名称 */}
                       <View 
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center mb-2 ${
+                        className={`w-8 h-8 rounded-lg flex items-center justify-center mb-1.5 ${
                           isSelected ? 'bg-black' : 'bg-gray-300'
                         }`}
                       >
-                        <Text className={`text-base font-bold ${isSelected ? 'text-white' : 'text-gray-500'}`}>
+                        <Text className={`text-sm font-bold ${isSelected ? 'text-white' : 'text-gray-500'}`}>
                           {zodiac}
                         </Text>
                       </View>
                       {/* 号码球 */}
-                      <View className="flex flex-wrap gap-1 justify-center">
+                      <View className="flex flex-wrap gap-0.5 justify-center">
                         {selectedNums.map(num => {
                           const attrs = getNumberAttributes(num)
                           return (
                             <View 
                               key={num} 
-                              className={`w-5 h-5 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}
+                              className={`w-4 h-4 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}
                             >
                               <Text className="text-xs font-bold">{attrs.formatted}</Text>
                             </View>
