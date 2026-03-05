@@ -131,31 +131,39 @@ const IndexPage = () => {
   // 切换生肖号码的显示状态
   const toggleZodiacVisibility = (zodiac: string) => {
     const isSelected = isZodiacSelected(zodiac)
+    const isVisible = isZodiacVisible(zodiac)
+    const zodiacNumbers = ZODIAC_TO_NUMBERS[zodiac] || []
     
-    if (!isSelected) {
-      // 如果生肖未被选中（灰色卡片），先将其所有号码添加到选号结果中
-      const zodiacNumbers = ZODIAC_TO_NUMBERS[zodiac] || []
-      setSelectNumbers(prev => {
-        const newNumbers = [...prev]
-        zodiacNumbers.forEach(num => {
-          if (!newNumbers.includes(num)) {
-            newNumbers.push(num)
-          }
+    if (isVisible) {
+      // 当前可见，点击隐藏：从选号结果中移除该生肖的号码
+      setSelectNumbers(prev => prev.filter(num => !zodiacNumbers.includes(num)))
+      // 从可见集合中移除
+      setVisibleZodiacs(prev => {
+        const newSet = new Set(prev)
+        newSet.delete(zodiac)
+        return newSet
+      })
+    } else {
+      // 当前不可见，点击显示
+      if (!isSelected) {
+        // 如果生肖未被选中，添加该生肖的所有号码到选号结果中
+        setSelectNumbers(prev => {
+          const newNumbers = [...prev]
+          zodiacNumbers.forEach(num => {
+            if (!newNumbers.includes(num)) {
+              newNumbers.push(num)
+            }
+          })
+          return newNumbers
         })
-        return newNumbers
+      }
+      // 添加到可见集合
+      setVisibleZodiacs(prev => {
+        const newSet = new Set(prev)
+        newSet.add(zodiac)
+        return newSet
       })
     }
-    
-    // 切换可见性
-    setVisibleZodiacs(prev => {
-      const newSet = new Set(prev)
-      if (newSet.has(zodiac)) {
-        newSet.delete(zodiac)
-      } else {
-        newSet.add(zodiac)
-      }
-      return newSet
-    })
   }
 
   // 检查生肖号码是否可见
