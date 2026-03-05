@@ -130,6 +130,23 @@ const IndexPage = () => {
 
   // 切换生肖号码的显示状态
   const toggleZodiacVisibility = (zodiac: string) => {
+    const isSelected = isZodiacSelected(zodiac)
+    
+    if (!isSelected) {
+      // 如果生肖未被选中（灰色卡片），先将其所有号码添加到选号结果中
+      const zodiacNumbers = ZODIAC_TO_NUMBERS[zodiac] || []
+      setSelectNumbers(prev => {
+        const newNumbers = [...prev]
+        zodiacNumbers.forEach(num => {
+          if (!newNumbers.includes(num)) {
+            newNumbers.push(num)
+          }
+        })
+        return newNumbers
+      })
+    }
+    
+    // 切换可见性
     setVisibleZodiacs(prev => {
       const newSet = new Set(prev)
       if (newSet.has(zodiac)) {
@@ -161,9 +178,16 @@ const IndexPage = () => {
     }
   }
 
-  // 复制选号结果
+  // 复制选号结果（复制所有可见的号码）
   const copySelectResults = () => {
-    const resultText = selectNumbers
+    // 收集所有可见生肖的号码
+    const allVisibleNumbers = new Set<number>()
+    ZODIAC_LIST.forEach(zodiac => {
+      const visibleNums = getVisibleNumbersByZodiac(zodiac)
+      visibleNums.forEach(num => allVisibleNumbers.add(num))
+    })
+    
+    const resultText = Array.from(allVisibleNumbers)
       .sort((a, b) => a - b)
       .map(num => num < 10 ? `0${num}` : `${num}`)
       .join(' ')
