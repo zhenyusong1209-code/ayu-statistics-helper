@@ -6,6 +6,7 @@ import {
   getNumberSize,
   getNumberAnimalType
 } from './numberAttributes'
+import { isSumOdd, isSumEven } from './numberParser'
 
 // 筛选条件类型
 export interface FilterConditions {
@@ -17,6 +18,8 @@ export interface FilterConditions {
   heads: number[]          // 头数：0-4（十位数）
   animalTypes: string[]    // 家禽野兽：家禽野兽
   oddEven: string[]        // 单双：单数双数
+  sumOdd: boolean          // 合单：合数为单数
+  sumEven: boolean         // 合双：合数为双数
 }
 
 // 获取数字的头数（十位数）
@@ -31,7 +34,7 @@ function getNumberOddEven(num: number): string {
 
 // 检查号码是否匹配所有选中的条件
 export function isNumberMatched(num: number, conditions: FilterConditions): boolean {
-  const { zodiacs, colors, elements, sizes, tails, heads, animalTypes, oddEven } = conditions
+  const { zodiacs, colors, elements, sizes, tails, heads, animalTypes, oddEven, sumOdd, sumEven } = conditions
 
   // 检查生肖
   if (zodiacs.length > 0) {
@@ -81,12 +84,18 @@ export function isNumberMatched(num: number, conditions: FilterConditions): bool
     if (!oddEven.includes(oddEvenValue)) return false
   }
 
+  // 检查合单
+  if (sumOdd && !isSumOdd(num)) return false
+
+  // 检查合双
+  if (sumEven && !isSumEven(num)) return false
+
   return true
 }
 
 // 根据筛选条件获取符合条件的号码
 export function filterNumbers(conditions: FilterConditions): number[] {
-  const { zodiacs, colors, elements, sizes, tails, heads, animalTypes, oddEven } = conditions
+  const { zodiacs, colors, elements, sizes, tails, heads, animalTypes, oddEven, sumOdd, sumEven } = conditions
   
   // 如果没有任何筛选条件，返回空数组
   if (
@@ -97,7 +106,9 @@ export function filterNumbers(conditions: FilterConditions): number[] {
     tails.length === 0 &&
     heads.length === 0 &&
     animalTypes.length === 0 &&
-    oddEven.length === 0
+    oddEven.length === 0 &&
+    !sumOdd &&
+    !sumEven
   ) {
     return []
   }

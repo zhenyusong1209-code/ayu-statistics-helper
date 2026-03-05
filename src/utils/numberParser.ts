@@ -121,6 +121,27 @@ export function countZodiacs(zodiacs: string[]): Record<string, number> {
   return counts
 }
 
+// 计算数字的合数（各位数字之和）
+export function getNumberSum(num: number): number {
+  let sum = 0
+  let n = num
+  while (n > 0) {
+    sum += n % 10
+    n = Math.floor(n / 10)
+  }
+  return sum
+}
+
+// 判断合数是否为单数
+export function isSumOdd(num: number): boolean {
+  return getNumberSum(num) % 2 === 1
+}
+
+// 判断合数是否为双数
+export function isSumEven(num: number): boolean {
+  return getNumberSum(num) % 2 === 0
+}
+
 // 获取数字的完整属性
 export function getNumberAttributes(num: number) {
   return {
@@ -131,7 +152,10 @@ export function getNumberAttributes(num: number) {
     element: getNumberElement(num),
     tail: getNumberTail(num),
     size: getNumberSize(num),
-    animalType: getNumberAnimalType(num)
+    animalType: getNumberAnimalType(num),
+    sum: getNumberSum(num),
+    isSumOdd: isSumOdd(num),
+    isSumEven: isSumEven(num)
   }
 }
 

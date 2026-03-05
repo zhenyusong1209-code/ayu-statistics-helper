@@ -39,7 +39,9 @@ const IndexPage = () => {
     tails: [],
     heads: [],
     animalTypes: [],
-    oddEven: []
+    oddEven: [],
+    sumOdd: false,
+    sumEven: false
   })
 
   // 处理输入
@@ -367,7 +369,9 @@ const IndexPage = () => {
       tails: [],
       heads: [],
       animalTypes: [],
-      oddEven: []
+      oddEven: [],
+      sumOdd: false,
+      sumEven: false
     })
   }
 
@@ -479,6 +483,48 @@ const IndexPage = () => {
       ...prev,
       oddEven: toggleArrayItem(prev.oddEven, value)
     }))
+  }
+
+  // 切换合单选择
+  const toggleSumOdd = () => {
+    setFilterConditions(prev => ({
+      ...prev,
+      sumOdd: !prev.sumOdd
+    }))
+  }
+
+  // 切换合双选择
+  const toggleSumEven = () => {
+    setFilterConditions(prev => ({
+      ...prev,
+      sumEven: !prev.sumEven
+    }))
+  }
+
+  // 切换合单合双选择
+  const toggleSumOddEven = (value: string) => {
+    if (value === '合单') {
+      toggleSumOdd()
+    } else if (value === '合双') {
+      toggleSumEven()
+    }
+  }
+
+  // 获取筛选结果中的号码按生肖分组的映射
+  const getFilteredNumbersByZodiac = (): Record<string, number[]> => {
+    const result: Record<string, number[]> = {}
+    ZODIAC_LIST.forEach(zodiac => {
+      result[zodiac] = []
+    })
+
+    filteredNumbers.forEach(num => {
+      const attrs = getNumberAttributes(num)
+      if (attrs.zodiac) {
+        result[attrs.zodiac].push(num)
+      }
+    })
+
+    return result
   }
 
   // 复制筛选结果
@@ -902,6 +948,43 @@ const IndexPage = () => {
                     })}
                   </View>
                 </View>
+
+                {/* 生肖展示 - 一行展示完 */}
+                <View className="mt-3 pt-3 border-t border-gray-100">
+                  <View className="grid grid-cols-12 gap-1.5">
+                    {ZODIAC_LIST.map(zodiac => {
+                      const filteredNums = getFilteredNumbersByZodiac()[zodiac]
+                      return (
+                        <View key={zodiac} className="flex flex-col items-center">
+                          {/* 生肖名称 */}
+                          <View 
+                            className={`w-8 h-8 rounded-lg flex items-center justify-center mb-1.5 ${
+                              filteredNums.length > 0 ? 'bg-black' : 'bg-gray-300'
+                            }`}
+                          >
+                            <Text className={`text-sm font-bold ${filteredNums.length > 0 ? 'text-white' : 'text-gray-500'}`}>
+                              {zodiac}
+                            </Text>
+                          </View>
+                          {/* 号码球 */}
+                          <View className="flex flex-wrap gap-0.5 justify-center">
+                            {filteredNums.map(num => {
+                              const attrs = getNumberAttributes(num)
+                              return (
+                                <View 
+                                  key={num} 
+                                  className={`w-4 h-4 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}
+                                >
+                                  <Text className="text-xs font-bold">{attrs.formatted}</Text>
+                                </View>
+                              )
+                            })}
+                          </View>
+                        </View>
+                      )
+                    })}
+                  </View>
+                </View>
               </View>
             )}
 
@@ -985,7 +1068,34 @@ const IndexPage = () => {
                   </View>
                 </View>
 
-                {/* 第二行：波色 家野 */}
+                {/* 第二行：合单 合双 */}
+                <View>
+                  <Text className="block text-xs font-medium mb-2 text-gray-700">合单合双</Text>
+                  <View className="flex flex-row gap-1">
+                    <View
+                      onClick={() => toggleSumOddEven('合单')}
+                      className={`flex-1 rounded-lg px-2 py-2 text-center ${
+                        filterConditions.sumOdd
+                          ? 'bg-orange-600 text-white'
+                          : 'bg-orange-50 text-orange-700'
+                      }`}
+                    >
+                      <Text className="text-xs font-medium">合单</Text>
+                    </View>
+                    <View
+                      onClick={() => toggleSumOddEven('合双')}
+                      className={`flex-1 rounded-lg px-2 py-2 text-center ${
+                        filterConditions.sumEven
+                          ? 'bg-orange-600 text-white'
+                          : 'bg-orange-50 text-orange-700'
+                      }`}
+                    >
+                      <Text className="text-xs font-medium">合双</Text>
+                    </View>
+                  </View>
+                </View>
+
+                {/* 第三行：波色 家野 */}
                 <View>
                   <View className="flex flex-row gap-2">
                     {/* 波色 */}
