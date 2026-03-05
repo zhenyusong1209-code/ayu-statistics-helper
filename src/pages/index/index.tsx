@@ -118,8 +118,8 @@ const IndexPage = () => {
   const copyResults = () => {
     const resultText = filteredNumbers.map(n => {
       const attrs = getNumberAttributes(n)
-      return `${attrs.formatted}(${attrs.color})`
-    }).join(' ')
+      return attrs.formatted
+    }).join(',')
     
     Taro.setClipboardData({
       data: resultText,
@@ -398,56 +398,56 @@ const IndexPage = () => {
 
         {/* 挑码区 */}
         {activeTab === 'pick' && (
-          <View className="space-y-4">
-            {/* 筛选结果区 - 移到上方 */}
-            <View className="bg-white rounded-xl p-4 shadow-sm">
-              <View className="flex flex-row justify-between items-center mb-3">
-                <Text className="block text-lg font-semibold text-gray-800">
+          <View className="space-y-3">
+            {/* 筛选结果区 - 占30%空间 */}
+            <View className="bg-white rounded-xl p-3 shadow-sm">
+              <View className="flex flex-row justify-between items-center mb-2">
+                <Text className="block text-base font-semibold text-gray-800">
                   筛选结果
                 </Text>
                 <View className="flex flex-row items-center gap-2">
-                  <Text className="text-sm text-gray-500">
-                    共 {filteredNumbers.length} 个号码
-                  </Text>
+                  {filteredNumbers.length > 0 && (
+                    <Text className="text-xs text-gray-500">
+                      {filteredNumbers.length} 个
+                    </Text>
+                  )}
                   {filteredNumbers.length > 0 && (
                     <View
-                      className="bg-blue-100 text-blue-600 rounded-lg px-3 py-1.5"
+                      className="bg-blue-100 text-blue-600 rounded-lg px-2 py-1"
                       onClick={copyResults}
                     >
-                      <Text className="text-xs font-medium">复制结果</Text>
+                      <Text className="text-xs font-medium">复制</Text>
                     </View>
                   )}
                 </View>
               </View>
 
-              <View className={`rounded-xl p-6 min-h-[120px] flex items-center justify-center ${
+              <View className={`rounded-lg p-4 min-h-[80px] flex items-center justify-center ${
                 filteredNumbers.length === 0 ? 'bg-gray-50' : 'bg-white'
               }`}
               >
                 {filteredNumbers.length > 0 ? (
-                  <View className="grid grid-cols-7 gap-2 w-full">
+                  <View className="grid grid-cols-7 gap-1.5 w-full">
                     {filteredNumbers.map(num => {
                       const attrs = getNumberAttributes(num)
                       return (
                         <View
                           key={num}
-                          className={`w-10 h-10 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}
+                          className={`w-7 h-7 rounded-full flex items-center justify-center ${getColorClassName(attrs.color)}`}
                         >
-                          <Text className="text-sm font-bold">{attrs.formatted}</Text>
+                          <Text className="text-xs font-bold">{attrs.formatted}</Text>
                         </View>
                       )
                     })}
                   </View>
-                ) : (
-                  <Text className="text-sm text-gray-400">请选择筛选条件</Text>
-                )}
+                ) : null}
               </View>
             </View>
 
-            {/* 属性选择区 */}
+            {/* 属性选择区 - 占70%空间 */}
             <View className="bg-white rounded-xl p-4 shadow-sm">
-              <View className="flex flex-row justify-between items-center mb-4">
-                <Text className="block text-lg font-semibold text-gray-800">筛选条件</Text>
+              <View className="flex flex-row justify-between items-center mb-3">
+                <Text className="block text-base font-semibold text-gray-800">筛选条件</Text>
                 {(filterConditions.zodiacs.length > 0 ||
                   filterConditions.colors.length > 0 ||
                   filterConditions.elements.length > 0 ||
@@ -455,10 +455,10 @@ const IndexPage = () => {
                   filterConditions.tails.length > 0 ||
                   filterConditions.animalTypes.length > 0) && (
                   <View
-                    className="bg-red-100 text-red-600 rounded-lg px-3 py-1.5"
+                    className="bg-red-100 text-red-600 rounded-lg px-2 py-1"
                     onClick={clearFilters}
                   >
-                    <Text className="text-xs font-medium">清空筛选</Text>
+                    <Text className="text-xs font-medium">清空</Text>
                   </View>
                 )}
               </View>
@@ -466,8 +466,8 @@ const IndexPage = () => {
               <View className="space-y-3">
                 {/* 生肖选择 */}
                 <View>
-                  <Text className="block text-sm font-medium mb-2 text-gray-700">生肖（可多选）</Text>
-                  <View className="grid grid-cols-6 gap-1.5">
+                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">生肖（可多选）</Text>
+                  <View className="grid grid-cols-6 gap-1">
                     {['鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪'].map(zodiac => (
                       <View
                         key={zodiac}
@@ -486,11 +486,11 @@ const IndexPage = () => {
 
                 {/* 波色选择 */}
                 <View>
-                  <Text className="block text-sm font-medium mb-2 text-gray-700">波色（可多选）</Text>
+                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">波色（可多选）</Text>
                   <View className="flex flex-row gap-2">
                     <View
                       onClick={() => toggleColor('红')}
-                      className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
                         filterConditions.colors.includes('红')
                           ? 'bg-red-600 text-white'
                           : 'bg-red-100 text-red-700'
@@ -500,7 +500,7 @@ const IndexPage = () => {
                     </View>
                     <View
                       onClick={() => toggleColor('蓝')}
-                      className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
                         filterConditions.colors.includes('蓝')
                           ? 'bg-blue-600 text-white'
                           : 'bg-blue-100 text-blue-700'
@@ -510,7 +510,7 @@ const IndexPage = () => {
                     </View>
                     <View
                       onClick={() => toggleColor('绿')}
-                      className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
                         filterConditions.colors.includes('绿')
                           ? 'bg-green-600 text-white'
                           : 'bg-green-100 text-green-700'
@@ -523,8 +523,8 @@ const IndexPage = () => {
 
                 {/* 五行选择 */}
                 <View>
-                  <Text className="block text-sm font-medium mb-2 text-gray-700">五行（可多选）</Text>
-                  <View className="grid grid-cols-5 gap-1.5">
+                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">五行（可多选）</Text>
+                  <View className="grid grid-cols-5 gap-1">
                     {['金', '木', '水', '火', '土'].map(element => (
                       <View
                         key={element}
@@ -543,11 +543,11 @@ const IndexPage = () => {
 
                 {/* 大小选择 */}
                 <View>
-                  <Text className="block text-sm font-medium mb-2 text-gray-700">大小（可多选）</Text>
+                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">大小（可多选）</Text>
                   <View className="flex flex-row gap-2">
                     <View
                       onClick={() => toggleSize('小')}
-                      className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
                         filterConditions.sizes.includes('小')
                           ? 'bg-orange-600 text-white'
                           : 'bg-orange-100 text-orange-700'
@@ -557,7 +557,7 @@ const IndexPage = () => {
                     </View>
                     <View
                       onClick={() => toggleSize('大')}
-                      className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
                         filterConditions.sizes.includes('大')
                           ? 'bg-indigo-600 text-white'
                           : 'bg-indigo-100 text-indigo-700'
@@ -570,8 +570,8 @@ const IndexPage = () => {
 
                 {/* 尾数选择 */}
                 <View>
-                  <Text className="block text-sm font-medium mb-2 text-gray-700">尾数（可多选）</Text>
-                  <View className="grid grid-cols-5 gap-1.5">
+                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">尾数（可多选）</Text>
+                  <View className="grid grid-cols-5 gap-1">
                     {Array.from({ length: 10 }, (_, i) => i).map(tail => (
                       <View
                         key={tail}
@@ -590,11 +590,11 @@ const IndexPage = () => {
 
                 {/* 家禽野兽选择 */}
                 <View>
-                  <Text className="block text-sm font-medium mb-2 text-gray-700">家禽野兽（可多选）</Text>
+                  <Text className="block text-xs font-medium mb-1.5 text-gray-700">家禽野兽（可多选）</Text>
                   <View className="flex flex-row gap-2">
                     <View
                       onClick={() => toggleAnimalType('家禽')}
-                      className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
                         filterConditions.animalTypes.includes('家禽')
                           ? 'bg-yellow-600 text-white'
                           : 'bg-yellow-100 text-yellow-700'
@@ -604,7 +604,7 @@ const IndexPage = () => {
                     </View>
                     <View
                       onClick={() => toggleAnimalType('野兽')}
-                      className={`flex-1 rounded-lg px-3 py-2 text-center ${
+                      className={`flex-1 rounded-lg px-3 py-1.5 text-center ${
                         filterConditions.animalTypes.includes('野兽')
                           ? 'bg-pink-600 text-white'
                           : 'bg-pink-100 text-pink-700'
