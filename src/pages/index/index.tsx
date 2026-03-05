@@ -163,9 +163,9 @@ const IndexPage = () => {
 
   // 处理复式类型选择
   const handleComplexTypeSelect = (k: number) => {
-    if (complexNumbers.length !== 6) {
+    if (complexNumbers.length < k) {
       Taro.showToast({
-        title: '请输入6个号码',
+        title: `请输入至少${k}个号码`,
         icon: 'none'
       })
       return
@@ -490,7 +490,7 @@ const IndexPage = () => {
               <View className="bg-gray-50 rounded-xl px-4 py-3 mb-3">
                 <Input
                   className="w-full bg-transparent text-base"
-                  placeholder="请输入6个号码（输入规则同统计模块）"
+                  placeholder="请输入2个或更多号码（输入规则同统计模块）"
                   placeholderClass="text-gray-400"
                   value={complexInputText}
                   onInput={handleComplexInputChange}
@@ -498,7 +498,7 @@ const IndexPage = () => {
               </View>
               <Text className="text-sm text-gray-500">
                 已识别 {complexNumbers.length} 个号码
-                {complexNumbers.length === 6 && '，可以进行复式计算'}
+                {complexNumbers.length >= 2 && '，可以进行复式计算'}
               </Text>
             </View>
 
@@ -507,8 +507,8 @@ const IndexPage = () => {
               <View className="bg-white rounded-xl p-4 shadow-sm">
                 <View className="flex flex-row justify-between items-center mb-3">
                   <Text className="block text-base font-semibold text-gray-800">已选号码</Text>
-                  <Text className={`text-sm ${complexNumbers.length === 6 ? 'text-green-600' : 'text-orange-600'}`}>
-                    {complexNumbers.length === 6 ? '✓ 已满足' : `还需要 ${6 - complexNumbers.length} 个号码`}
+                  <Text className={`text-sm ${complexNumbers.length >= 2 ? 'text-green-600' : 'text-orange-600'}`}>
+                    {complexNumbers.length >= 2 ? '✓ 可以进行复式计算' : `至少还需要 ${2 - complexNumbers.length} 个号码`}
                   </Text>
                 </View>
                 <View className="flex flex-wrap gap-2">
@@ -525,31 +525,29 @@ const IndexPage = () => {
             )}
 
             {/* 复式选项 */}
-            {complexNumbers.length === 6 && (
+            {complexNumbers.length >= 2 && (
               <View className="bg-white rounded-xl p-4 shadow-sm">
                 <Text className="block text-base font-semibold mb-3 text-gray-800">复式选项</Text>
                 <View className="flex flex-row gap-2">
-                  {[
-                    { k: 2, label: '复2', count: calculateCombination(6, 2) },
-                    { k: 3, label: '复3', count: calculateCombination(6, 3) },
-                    { k: 4, label: '复4', count: calculateCombination(6, 4) },
-                    { k: 5, label: '复5', count: calculateCombination(6, 5) }
-                  ].map(item => (
-                    <View
-                      key={item.k}
-                      onClick={() => handleComplexTypeSelect(item.k)}
-                      className={`flex-1 rounded-lg px-3 py-3 text-center cursor-pointer ${
-                        complexType === item.k
-                          ? 'bg-blue-600 text-white'
-                          : 'bg-gray-100 text-gray-700'
-                      }`}
-                    >
-                      <Text className="block text-sm font-medium">{item.label}</Text>
-                      <Text className={`text-xs mt-1 ${complexType === item.k ? 'text-blue-100' : 'text-gray-500'}`}>
-                        {item.count}组
-                      </Text>
-                    </View>
-                  ))}
+                  {Array.from({ length: Math.min(complexNumbers.length - 1, 4) }, (_, i) => i + 2).map(k => {
+                    const count = calculateCombination(complexNumbers.length, k)
+                    return (
+                      <View
+                        key={k}
+                        onClick={() => handleComplexTypeSelect(k)}
+                        className={`flex-1 rounded-lg px-3 py-3 text-center cursor-pointer ${
+                          complexType === k
+                            ? 'bg-blue-600 text-white'
+                            : 'bg-gray-100 text-gray-700'
+                        }`}
+                      >
+                        <Text className="block text-sm font-medium">复{k}</Text>
+                        <Text className={`text-xs mt-1 ${complexType === k ? 'text-blue-100' : 'text-gray-500'}`}>
+                          {count}组
+                        </Text>
+                      </View>
+                    )
+                  })}
                 </View>
               </View>
             )}
